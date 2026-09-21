@@ -28224,3 +28224,425 @@ F05 provenance 闭合及下一矩阵单元续记：用户服务器只读回传�
 ## 2026-09-17 无新增人工标注条件下的研究范围决定
 
 用户接受在不新增人工标注时继续保留 CTI 关系识别大方向，并据当前证据收缩或重定研究问题。现有 AZERG 原标签仍可支持 T0 同数据方法与严格诊断，但 D 无 survivor、E 缺来源元数据、F 与备选 A 未过数据门槛，不能继续按原 D/E/F 三项创新承诺推进，也不能用更多训练替代来源、未知关系共存或证据金标。下一步与导师确认是否接受“一个方法问题加严格误差/鲁棒性研究”的论文范围；若必须形成三个独立、正向支持的贡献，则需调整问题或另行批准外部数据/人工评测。当前不授权新训练、外部数据导入、标签修改或 outer/Task105/锁定评测访问。
+
+## 2026-09-17 riichi2 无新增人工标注优化路线重排（仅规划）
+
+按用户要求，将 `riichi2.md` 作为建议文档，与现有 Riichi、交接和审计断点对照后，把下一路线重排为 T0 合同/合成验证 → 独立 T2 教师和机器银标准入 → 最多 50 训练侧文本记录小批试验 → 冻结 B0/B1/G0S0/G1S0/G0S1/G1S1、2 内层折×seed13 筛选 → 晋级后多种子和受控缺标 → 另行决定 outer。H1 为原文跨度+角色等价核验与拒答的弱监督生成，H2 为正标签保护+逐关系状态掩码+文本记录/关系均衡蒸馏；两者均是待否证候选，不预设创新或效果。详细范围、强基线、停止条件与边界见 `GRADUATION_DESIGN_RESEARCH_HANDOFF.md` 第 27 节。
+
+本地只读源码核验纠正 `riichi2.md`“公开仓库没有源码”的条件：`tools/build_cti_multilabel_pairs.py`、`tools/train_cti_multilabel_atgl.py`、`model/pu_atgl_loss.py`、`tools/train_cti_pu_atgl.py`、`tools/distill_cti_recall_guard.py` 均存在。现有多标签 dataset 和 ATGL 会把未标出的维度作为 0/负项；旧 PU 是候选行级处理，旧蒸馏已有教师/证据/schema guard，故新机制须独立实现监督状态视图并与旧方法公平比较。核对 DocGNRE、UGDRE、SSR-PU 官方论文页；LLM+NLI、PU、蒸馏及逐类伪标签筛选不是可单独主张的首创。
+
+本轮没有读取真实训练或评测样本、未使用 GPU/教师、未生成伪标签或修改标签、未进入 outer/Task105/锁定评测。用户请求重新规划不自动授权 T2、远程数据传输、模型训练或外层开放；下一步仅允许只读合同与合成验证。旧 D/E/F/备选 A 停止记录不变。
+
+## 2026-09-17 riichi2 T0 绑定与合成合同通过、T2 小批提案待准入
+
+依新路线顺序完成前两阶段中无需新监督的工作：原训练对、固定 18 标签及 fold02/03 inner 四文件的精确 SHA256 均与冻结清单一致，仅哈希文件、未解析真实样本；508 个训练文本记录仍无可证实发布者来源族。只读核查现有多标签/ATGL、PU-ATGL 和旧蒸馏代码，确认新 H1/H2 必须使用独立逐关系状态视图，并作同候选/同预算近邻比较。H1/H2 的假设和否证条件见交接第 28 节。
+
+纯标准库合同 `tools/weak_relation_supervision_contract.py` SHA256=`0d3a6d3a12014f37950b0efcbf0c376d836853962a2af77060cb6010a61e660d` 与 8 项合成边界测试 SHA256=`a192e3003be45c137aa2402528caba16fbab24240e411e090545b26ecaa097ce` 通过；py_compile、Ruff 通过。验证报告 `cti_improvement/research_protocol/weak_relation_supervision_t0_contract_verification.json` SHA256=`63d64f8ba6246c0ae1cf4e6ea3013af87a7ba57d3e0ae8fdf26d3d48ffa098a8`。官方模型卡和 API 核对了本地候选 Qwen2.5-1.5B-Instruct（Apache-2.0，revision `989aa7980e4cf806f80c7fef2b1adb7bc71aa306`）与 DeBERTa-v3-base-mnli-fever-anli（MIT，revision `6f5cf0a2b59cabb106aca4c287eed12e357e90eb`，外部 NLI 监督）。最小 50 组本地 T2 提案 JSON SHA256=`134ab8a88c2040a237f3324e0b3b1135ae34a1b637734ee9332476934d251bb5`，状态为未准入；不向第三方发送 AZERG 文本。
+
+此时没有真实银标、模型推理/训练、GPU 或 outer/Task105/锁定评测访问；原有数据和标签未更动。后续须先将候选教师、NLI、设备、模板、样本 IDs、输出范围和预算完成精确准入，再考虑小批试验。旧 D/E/F 与备选 A 停止条件不受此候选新轨道影响。
+
+
+## 2026-09-17 riichi2 T2 训练侧小批预选冻结（未授权教师推理）
+
+依交接第 29 节，只解析精确绑定的 fold02 inner train/heldout JSON 行中的 `report_id` 分组字段，不保留/输出正文、标签或候选对：train 6642 行/317 组，heldout 1510 行/86 组，组间 0 重合。seed13 的确定性哈希排序预选 50 个 train 文本组。`tools/freeze_weak_relation_teacher_pilot.py` SHA256=`b2d790082a1f5ba59768c1e8950cd22e486ed1cd23364a90689899a5e9eabe21`；`tests/test_weak_relation_teacher_pilot_selection.py` SHA256=`b8a70944ae44a420ad3dff50d3334256b26a3c961b109ec01eb85ff9a7ccf5aa`；共 10 项合成测试通过。独占生成的 `cti_improvement/research_protocol/weak_relation_teacher_pilot_selection.json` SHA256=`4e8e3320a7b832f8a5787262f358a798adb181bd8e827547cdc1f2ff82dc8b20`；已绑定到 `weak_relation_supervision_t2_admission_proposal.json`；该提案后续又绑定 18 类模板和 CPU-only 调用上限，最新版 SHA256=`3b7457d6d76acc55c3228707b47828b07a64dcc5121cc1fce936b9bcc764c56d`。模板 `cti_improvement/research_protocol/weak_relation_teacher_pilot_templates.json` SHA256=`776c2bea4dce365572186a9621e5a24a38c6285d8f9dac3d35f825471700fd61`；`communicates_with`、`has`、`indicates` 因语义歧义预设拒答。此前历史中的提案哈希为更新前版，现以最新版为准。
+
+这是 T0 预备性选择，不是 T2 准入；未调用或下载教师/NLI、未产生机器标签、未训练、未用 GPU，未读取 outer/Task105/锁定评测。下一步先获具体 T2 授权，再核实实际权重、许可快照及运行环境并实现合成验证的 fail-closed runner，之后才可能进行最多 50 组训练侧推理；当前无服务器执行命令。上一条“未解析真实样本”仅适用于当时的哈希检查，本条透明记录了随后的 `report_id` 解析。
+
+
+## 2026-09-17 T2 50 组 CPU 教师试验获批、执行器冻结
+
+用户明确批准冻结的 T2 提案。授权 SHA256=`44c57d677b14382d7520f7d3f0230a220dc151220c7bd411a3a51fc4a632ede4`，范围为固定 Qwen/NLI 修订、50 个 fold02 train 文本组、50 次生成/1800 次 NLI 评分上限、CPU-only、本地或用户控制服务器、机器银标独立存放；禁止训练、第三方文本传输、heldout 教师调用、outer/Task105/锁定评测、原标签修改及自动机器负例。
+
+fail-closed backend/runner/test/隔离 runtime pins 已实现；17 项合成测试、py_compile、Ruff 通过。真实输入只作结构审计：50 组共 1035 候选行，39 组单证据窗、11 组多窗、最大 139 窗；1017/1035 行的主客体字面均存在于对应证据窗，缺失者必拒答。模型调用后异常保留 `.incomplete` 和调用计数，禁止删除后重试。冻结清单 `weak_relation_teacher_pilot_cpu_execution_freeze.json` SHA256=`8c97495096add49b0d9931091d5b7d53875bad6117b09cc8b5f58d43fc94ecac`；文件哈希详见该清单及交接第 30 节。
+
+本地环境没有 torch/transformers，exact preflight 按预期 fail-closed，未调用模型。仓库主 requirements 版本也不兼容 Qwen2.5，因此下一步只在用户服务器建隔离 CPU runtime、缓存精确权重并运行 preflight；回传通过结果后才能执行。未使用 GPU、未生成银标、未训练，未访问 outer/Task105/锁定评测。
+
+
+## 2026-09-18 T2 隔离 CPU 依赖安装网络超时
+
+用户服务器回报：首轮后台 `pip install -r requirements_weak_relation_teacher_cpu.txt` 退出码 2，末尾异常为 `HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out`。这是下载阶段网络读取超时；现有截断日志不能确定具体失败包或已安装子集。不得将其记录为模型/代码运行失败。隔离 venv 已建立，主 `unirel38` 未被安装命令修改；尚无教师权重调用、机器银标或训练。下一步在同一隔离 venv、同一冻结 requirements 上提高 pip socket timeout 和重试次数，保留首轮日志并使用新日志/退出码；只有退出码 0、`pip check` 和精确版本/CPU wheel 验证通过后，才恢复模型权重准备及离线 preflight。不改冻结清单、不访问 outer/Task105/锁定评测。
+
+
+## 2026-09-18 T2 依赖重试成功及首次推理前合同修复
+
+用户服务器回报：同一隔离 venv 中 pip 重试退出码 0，日志显示精确 CPU torch 与 transformers 等包安装成功；`pip check`、`torch.version.cuda` 尚待单独验证。旧失败是网络下载超时，不是训练失败。模型权重、真实机器建议均尚未回报。
+
+模型调用前发现旧 prompt 未要求 `pair_id`，旧解析器却要求，可能使全部建议误拒答。获准 50 组内 `(subject_id, object_id)` 对共 1035 个且组内无重复，修复为唯一有向 ID 匹配并核验引用零基、右开、逐字 offset；反向、歧义和错误 span 拒答。精确 CPU runtime 版本检查加强。未改授权范围、模板、模型修订或预算。19 项合成测试、Ruff、py_compile 通过。旧执行冻结 SHA256=`8c97495096add49b0d9931091d5b7d53875bad6117b09cc8b5f58d43fc94ecac` 作废；新权威清单 SHA256=`2e9d92d6224351f690237a6e9bc48011f454f1e6f628b442ae5a03ea87a2f0a2` 绑定 backend=`c0e1b95db2789106564874355aad7f6ed11bda9db8128f747e62851223176939`、runner=`5bcaadb3e19e52399141e49eed58c0caa30ad9c62496a3abb4cbb10b443bbd55`、test=`11c332116d4eedfe4682e9271520ed7a794bbc2b7d1d544e853d8ede90aedc2b`。下一步服务器只上传并验证这三份修正文件及替换后的同名冻结清单，再做隔离环境版本检查、精确权重缓存和 preflight；不得用旧 runner execute。禁止 GPU、训练、第三方文本传输及 outer/Task105/锁定评测。
+
+
+## 2026-09-18 T2 隔离 CPU 环境与修正测试服务器验证通过
+
+用户服务器回报：隔离 venv 的 `pip check` 为 `No broken requirements found`；`torch.__version__=2.3.1+cpu`、`torch.version.cuda=None`、`transformers.__version__=4.46.3`，精确断言通过；使用 `PYTHONPATH` 执行修正后 `tests/test_weak_relation_teacher_pilot_cpu.py` 的 9 项合成测试全部通过。用户尚未回传修正 backend/runner/test/执行冻结四文件的外层 SHA 核验，也未回传精确模型权重下载或离线 preflight；下一步先完成四哈希，再仅下载授权的两模型修订并运行 `--mode preflight`。没有真实机器建议/银标、训练、GPU 使用或 outer/Task105/锁定评测访问的回报；不得执行 `--mode execute`。
+
+
+## 2026-09-18 T2 精确模型缓存失败：官方 Hugging Face 路由不可达
+
+用户服务器下载日志回报 `download_exit_code=1`：对 `https://huggingface.co/api/models/Qwen/Qwen2.5-1.5B-Instruct/revision/989aa7980e4cf806f80c7fef2b1adb7bc71aa306` 的连接报 `[Errno 101] Network is unreachable`，随后 `LocalEntryNotFoundError` 明确本地没有该精确修订的 snapshot。失败发生在模型元数据获取阶段，不是执行器 preflight、教师推理或权重校验失败；第二个 NLI 下载因前一命令失败未启动。不得直接运行 `--mode execute`，也不得将缓存缺失解释为研究方法的阴性结果。下一步只做官方地址及候选镜像的只读网络连通性检查；若官方地址不可用而改走镜像或用户控制设备离线传输，须仍锁定原 commit、核验完整权重血缘并保持数据文本仅在用户控制环境中。当前未收到 outer/Task105/锁定评测访问、GPU、训练或银标产出报告。
+
+
+## 2026-09-18 T2 模型镜像仅作传输、官方权重哈希先验
+
+用户服务器只读连通性：`huggingface.co` IPv4 HTTPS 超时（HTTP 000），`hf-mirror.com` 对冻结 Qwen commit 的模型 API 返回 HTTP 200。镜像只可作为精确 commit 的模型文件传输，不发送 AZERG/CTI 文本；下载后仍须离线验证权重文件与官方 Hugging Face 页面发布的 SHA256 一致。官方固定修订 `Qwen/Qwen2.5-1.5B-Instruct` commit `989aa7980e4cf806f80c7fef2b1adb7bc71aa306` 的 `model.safetensors` SHA256=`dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee`，官方文件页：https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/989aa7980e4cf806f80c7fef2b1adb7bc71aa306/model.safetensors 。NLI commit `6f5cf0a2b59cabb106aca4c287eed12e357e90eb` 的 `model.safetensors` SHA256=`06d6fd89edd4f97816831626daafbdb0b029cf63bae8edc0bccab1d64e2e7707`，官方文件页：https://huggingface.co/MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli/blob/6f5cf0a2b59cabb106aca4c287eed12e357e90eb/model.safetensors 。NLI 仓库有同体积 `pytorch_model.bin`，建议镜像传输排除 `.bin`、只加载 safetensors，避免重复下载和 pickle。两项权重哈希尚待用户服务器实测；未运行模型或 preflight。原授权模型和预算不变。
+
+
+## 2026-09-18 T2 镜像模型缓存下载完成、权重哈希待核验
+
+用户服务器回报：从 `hf-mirror.com` 按两个已批准 commit 下载的后台命令 `mirror_exit_code=0`；日志末尾显示 NLI 仓库 9 个非 `.bin` 文件下载完成、snapshot 路径为 `.../snapshots/6f5cf0a2b59cabb106aca4c287eed12e357e90eb`。由于回传仅为尾部日志，Qwen snapshot 尚未逐项回传；两份 safetensors 内容 SHA256 也尚未独立复算。下一步用 `HF_HUB_OFFLINE=1` 和 `local_files_only=True` 从同一缓存解析固定修订，流式计算 Qwen/NLI 权重哈希并对照官方值；同时复核四个修正文件 SHA。只有这些均通过，才运行 CPU-only `--mode preflight`。未收到真实教师推理、训练、GPU 或 outer/Task105/锁定评测访问报告。
+
+
+## 2026-09-18 T2 精确权重与离线 CPU preflight 通过
+
+用户服务器完整回报：修正 backend/runner/test/执行冻结四文件 `sha256sum -c` 均 OK；经 `HF_HUB_OFFLINE=1` 和 `local_files_only=True`，Qwen2.5-1.5B-Instruct commit `989aa7980e4cf806f80c7fef2b1adb7bc71aa306` 及 NLI commit `6f5cf0a2b59cabb106aca4c287eed12e357e90eb` 的 `model.safetensors` 均与事先从官方页面冻结的 SHA256 一致（`BOTH_WEIGHTS_VERIFIED`）。随后 `--mode preflight` 返回 `passed_weak_relation_teacher_pilot_CPU_preflight`，selected_text_groups=50、selected_candidate_pairs=1035、enabled_relation_templates=15，transformers=4.46.3、torch=2.3.1+cpu、CUDA_VISIBLE_DEVICES=-1，GPU_initialized_or_used=false、outer_or_locked_evaluation_accessed=false、model_training_allowed=false，提案及授权哈希匹配。镜像仅运输了模型权重，未发送项目文本。下一步按已批准范围单次 CPU-only `--mode execute`，可后台运行并保留日志/退出码；若失败或产生 `.incomplete`，不得重试或清理，应先只读诊断。尚无真实机器银标或训练结果。
+
+
+## 2026-09-18 T2 单次 CPU execute 进行中：超长输入预检警告
+
+用户服务器回报已启动唯一获准的后台 CPU execute；运行约 6 分钟时进程仍存在，尚无退出码。日志显示 Transformers 对 `do_sample=False` 时 `temperature/top_p/top_k` 不生效的警告，以及 tokenizer 发现某组渲染输入 259190 token 大于模型 131072 token 最大长度的警告。冻结 runner 先完整 tokenization 计数，再以 4096 token 上限拒答超长组；若仍是已核验文件，超长序列不会传给 `generator.generate`。当前只可只读检查子进程、资源和日志，不能启动第二次、修改冻结代码、清理 `.incomplete` 或接触保护评测。无 postrun/结果结论。
+
+## 2026-09-18 T2 单次 CPU 教师小批试验结果：87/87 建议拒答
+
+用户服务器回报后台 execute 退出码 0，postrun=`passed_weak_relation_teacher_pilot_CPU_postrun`，完成清单内文件哈希均通过。50 个固定 fold02 train 文本组中 47 次生成、3 组输入超 4096 token 而拒答；87 条可解析建议全部 `unresolved`：82 条 `missing_quote`、2 条 `ordered_pair_missing_or_ambiguous`、3 条 `unknown_relation_or_disabled_template`。生成解析率 1.0，引用对齐率 0，接纳率 0，接纳关系覆盖为空，NLI 假设评分 0；正例一致性诊断为零仅因无接纳样本。运行 362.374 秒。该结果表明本次冻结教师输出没有任何建议跨过逐字原文引用和有向候选门控，不能形成训练用机器正例；不能将空输出转成机器负例、放宽证据规则、按这一次 pilot 推断教师事实精度或 H1/H2 的下游效应。按 riichi2 的先小批审计再筛选顺序，停止扩量与学生训练；可只读审计原始输出的字段结构和提示合同，不展示源文本或原始教师输出。若提出修订，需新协议与授权，不覆盖/重试本次单元。
+
+服务器外层 SHA256：completion=`909b7f3675bee25bc21cddb6aa406b294df5bc8c8b7fd86c6d4f1418843828c6`，metrics=`556645cdc8348126fc78a9220449bd79899122df457de71027f1cb3da34731e4`，machine_silver=`904d0d397619cce188511708f99e9d504358838a4f3456cd4ac49537f1c9d097`，raw_teacher_outputs=`c79da90b2b0bcf536407d12a79050d8844e0fee3cd404bc1031ea6405944c9c8`。postrun manifest SHA 与外层值一致；外层哈希尚未本地下载重算。授权 SHA256=`44c57d677b14382d7520f7d3f0230a220dc151220c7bd411a3a51fc4a632ede4`；服务器回报 `model_training_executed=false`、`GPU_initialized_or_used=false`、`outer_or_locked_evaluation_accessed=false`。保留全部原位产物，outer/Task105/锁定评测继续封闭。
+
+## 2026-09-18 T2 只读输出结构与提示合同审计
+
+用户服务器对 `raw_teacher_outputs.jsonl` 先核对 SHA256=`c79da90b2b0bcf536407d12a79050d8844e0fee3cd404bc1031ea6405944c9c8`，随后仅汇总 47 次生成的 87 条建议：`quote` 键 `absent=87`；所检查的 `evidence`、`evidence_quote`、`evidence_text`、`quote_text`、`citation`、`supporting_text` 六种替代字段出现次数均为 0。该只读审计未输出原文或原始模型回复。代码核对发现冻结模板的 `generator_output_schema` 元数据列有 `quote`，但实际构造 prompt 只拼接 `generator_instruction` 和 `format_contract`；前者写的是自然语言 `exact source quote`，后者明确要求 `quote_start`/`quote_end`，均未明确要求 JSON 键名 `quote`。因此提示与解析器的精确字段合同没有完整传达到生成器；这与 87/87 缺失相符，但不能仅据此证明是唯一原因或证明模型只因该缺口失败。本单元仍以零引用对齐、零接纳、零 NLI 输入闭合；不得修改冻结文件后重跑、从现有回复补造引用或放宽门控。若继续此方向，应另行设计明确 JSON schema 的新候选协议、先做纯合成合同测试，再就新的训练侧小批单元单独决定授权。
+
+## 2026-09-18 T2 引用字段修复的独立预注册准备（未授权执行）
+
+在前一单次 T2 pilot 的 87/87 建议缺失 `quote` 键、NLI=0、接纳=0 的结果之后，仅准备新的诊断单元，未修改或重跑旧冻结文件。新增纯标准库 `tools/prepare_weak_relation_quote_schema_pilot.py`：对原 fold02 train/heldout 及旧 50 组选择清单先验 SHA256 校验，只提取 report_id 和每组行数；按同一 seed13 哈希排序取第 51–60 名训练组，生成独占的 `weak_relation_quote_schema_pilot_selection.json`。新 10 组共 29 候选行，与旧 50 组及 fold02 heldout 的组交集均为 0。选择清单 SHA256=`2cd6c052b9cc47c30daf28ae0f4a1b46b63ad6e91c752048d59e6b8103b7b96b`。
+
+新函数 `build_quote_schema_prompt` 在实际生成提示中明确写出 `relation`、`subject_id`、`object_id`、`quote`、`quote_start`、`quote_end` 六个精确 JSON 键名、原文逐字引用、主客体字面、零基右开偏移与无法核验时返回空列表；递归禁止 gold/labels/heldout 字段进入教师输入。脚本 SHA256=`2574d13573100a1f10109ebea87e9c8f791cb5c938fe1902233af1450508c089`，合成测试 SHA256=`64382e747c3bddcefce72dd9e6cf3c684d3337c000f75a6603b9ce33327227d4`；4 项测试、py_compile、Ruff 通过。最初本机 `python` 命令是 Windows 商店别名且不可用，改用已安装的 `py -3.10`；第一次测试运行缺 PYTHONPATH，显式设仓库路径后 4 项通过。这些环境问题未影响模型或数据产物。
+
+独立提案 `cti_improvement/research_protocol/weak_relation_quote_schema_pilot_proposal.json` SHA256=`08b8107119aadff7ce65f6f9c5110281666c2072ad05b5c5f738c02c73a6240b`，状态 `prepared_not_authorized`，代码/测试/选择绑定回读通过。提议范围为旧 pilot 未用过的 10 个 fold02 train 文本组、最多 10 次同修订 Qwen CPU-only 生成、0 次 NLI、0 训练、0 银标准入、无第三方文本传输/outer/Task105/锁定评测；新输出路径尚不存在。若实际生成少于 5 次或建议少于 5 条，判为证据不足并停止；否则只有非空 `quote` 键覆盖至少 80%、逐字引用和双论元对齐至少 50%、至少 3 条对齐建议来自至少 2 个文本组，才可考虑另拟 NLI 方案，绝不自动晋级。旧 50 组与新 10 组不同，不能声称配对因果提示增益。后续仍需独立授权和单独 fail-closed CPU runner、输出形状/超长/调用预算/拒绝覆盖等合成测试与执行冻结；本轮没有教师/NLI 调用、训练、GPU 或保护评测访问，也没有服务器 execute 命令。
+
+## 2026-09-18 新对话交接：PowerShell 上传与 PyCharm 远程训练习惯
+
+用户明确要求为新对话汇总本对话并记录固定操作方式。已更新 `GRADUATION_DESIGN_RESEARCH_HANDOFF.md` 首页接手顺序：同时阅读 `riichi2.md`，优先第 37 节最新断点而非旧第 9 节；新增第 37 节，明确本地 Windows PowerShell 负责将代理准备并核哈希的文件用 scp 按目录上传，服务器逐项 `sha256sum -c`，正式训练由用户在 PyCharm 远程 Run Configuration 中启动，代理不假定自身可交互 SSH 或点击 PyCharm。服务器终端只用于获准的 CPU 诊断/校验；旧 T2 唯一 CPU pilot 的命令不可复用为新 10 组授权。第 37 节同时概述 D/E/F 关闭状态、50 组 T2 失败结果、87/87 `quote` 键缺失及可能的提示合同缺口，并绑定新的 10 组 quote-schema 提案 SHA256=`08b8107119aadff7ce65f6f9c5110281666c2072ad05b5c5f738c02c73a6240b`。新提案仍 `prepared_not_authorized`，无新 runner、上传或训练；outer/Task105/锁定评测继续封闭。
+
+## 2026-09-18 独立 quote-schema CPU 执行器与合成边界验证（仍未授权运行）
+
+接续第 37 节，仅完成本地代码、测试和非执行性冻结。原提案 SHA256=`08b8107119aadff7ce65f6f9c5110281666c2072ad05b5c5f738c02c73a6240b`、10 组选择清单 SHA256=`2cd6c052b9cc47c30daf28ae0f4a1b46b63ad6e91c752048d59e6b8103b7b96b`、准备脚本 SHA256=`2574d13573100a1f10109ebea87e9c8f791cb5c938fe1902233af1450508c089`、原四项合成测试 SHA256=`64382e747c3bddcefce72dd9e6cf3c684d3337c000f75a6603b9ce33327227d4` 全部本地复算吻合，未改原字节。
+
+新独立 runner `tools/run_weak_relation_quote_schema_cpu.py` SHA256=`e5d9be3a16f875a973f0b8e197e3e690780f51132091f8bb4124e94089cc0575`，纯合同 backend `tools/weak_relation_quote_schema_cpu_backend.py` SHA256=`f6e64f941377cfd717d6722c84b08cce454fad19f5287aa6c3b67bc2396e4d30`，合成测试 `tests/test_weak_relation_quote_schema_cpu.py` SHA256=`6ab0766637a0afd9f04da81dc9cc4bd090c09c486612e94feee695f3535a1d6e`。只读准备模式 `--mode validate-prepared` 回报 `passed_quote_schema_prepared_bindings_no_authorization`。其余 `preflight/execute/postrun` 必须另有精确授权文件、CPU 离线环境及冻结绑定；预检在读取 train/heldout 行或导入模型前检查授权，缺授权时本地实测退出码 2，且无输出目录或暂存目录。运行时核固定 Qwen 修订和官方 safetensors SHA256=`dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee`，最多 10 组/10 次生成、输入超过 4096 token 整组拒答，0 NLI、0 银标准入、0 训练，按逐字引文和有向双论元仅统计诊断门槛；完成输出原子提交，异常保留 `.incomplete` 且不得重试或清理。
+
+非执行性清单 `cti_improvement/research_protocol/weak_relation_quote_schema_cpu_execution_freeze.json` SHA256=`5e019e0466c48263cea972a1251d6b134f39905b538ee816ca5a128cc6fd354f`，绑定 9 个本地代码/协议/模板/依赖文件，状态 `prepared_not_authorized`、授权效果 `none`。12 项纯合成测试（新 8 项、旧 4 项）、Python 3.10 py_compile、Ruff 均通过；未在服务器上传、未使用实际训练行跑新 runner、未调用教师/NLI、未训练、未用 GPU，也未访问 outer/Task105/锁定评测。独立执行授权尚不存在；旧 50 组授权不可套用。下一步只能先由用户单独决定是否批准这 10 组精确 CPU 诊断，获批后再按本清单哈希生成授权、PowerShell 分目录上传并服务器核验；目前没有 execute 命令。
+
+## 2026-09-18 用户授权独立 10 组 quote-schema CPU 诊断，尚未上传或运行
+
+用户在上一轮明确获知精确范围与冻结 SHA256 后回复“授权”，仅授权此前 `weak_relation_quote_schema_cpu_execution_freeze.json` SHA256=`5e019e0466c48263cea972a1251d6b134f39905b538ee816ca5a128cc6fd354f` 绑定的 10 组 fold02 train-side CPU quote-schema 诊断。新 `cti_improvement/research_protocol/weak_relation_quote_schema_execution_authorization.json` 独占创建，SHA256=`0f6702fc644b872c81c5a04375f3d0b1005c85f5c5e90559b8e3027fe8e95c7a`；它绑定旧提案/选择/冻结哈希、固定 Qwen commit、最多 10 次生成、4096/512 token 限额、0 NLI、0 银标准入、0 训练、CPU-only、离线模型加载、专属不可覆盖输出路径，禁止第三方文本传输、GPU、outer/Task105/锁定评测。旧 50 组授权和结果不变，不能从本授权推出学生训练或扩量。
+
+本地执行 `verify_prepared()` 与 `require_authorization()` 返回 `AUTH_BINDINGS_OK`，授权哈希一致；12 项纯合成测试、Ruff、py_compile 仍通过。未运行本地 formal preflight 或真实 train row 迭代，未上传服务器、未调用模型、未生成输出。下一步用户按 PowerShell 工作流上传冻结清单的 9 个绑定文件加新授权文件与冻结清单，共 11 文件；服务器逐项 sha256sum -c、运行合成测试，再在隔离 CPU venv 和固定离线缓存运行一次 preflight。只有服务器回传全部通过且专属输出目录为空，才考虑执行已授权的单次 execute；失败立即停下，不替换样本、改授权或清理暂存目录。
+
+## 2026-09-18 quote-schema 上传首尝试在 SSH 认证阶段失败
+
+用户本地 Windows PowerShell 首次 scp 回报 `Permission denied, please try again`，随后 `Connection closed`，首个 tools 上传命令抛出“tools 上传失败”并终止，未进入服务器文件哈希/合成测试/preflight。回传的目标字符串显示 `root\@connect.westd.seetacloud.com`，文件路径中也可见 `\_`，与应使用的原样 `root@connect.westd.seetacloud.com` 和普通下划线不一致；可能是复制时引入的转义，尚不能单凭日志断定密码本身有误。下一步先在本地执行单行 `ssh -p 45423 root@connect.westd.seetacloud.com` 验证交互登录，不回传密码；登录成功后再用不含反斜杠转义或 PowerShell 行续接符的单行 scp 上传。授权/冻结不变，服务器尚未回报任何新诊断运行，禁止在哈希和 preflight 前 execute。
+
+## 2026-09-18 quote-schema 授权文件上传成功（用户回报，服务器哈希待核）
+
+用户回报使用纠正后的无转义、单行 PowerShell scp 命令，四组文件均上传成功；此前 SSH 单行交互登录也成功。此状态仅来自用户回报，代理尚未获得服务器 11 文件 sha256sum、合成测试或 preflight 输出，不声称服务器文件已独立核验。下一步服务器只读运行 11 项 sha256sum -c；全部 OK 后再依次运行合成测试和 CPU 离线 preflight。正式 execute、NLI、学生训练、GPU、outer/Task105/锁定评测均未回报执行。
+
+## 2026-09-18 quote-schema 服务器 11 项上传哈希通过（用户回传）
+
+用户在服务器项目目录运行 11 项 `sha256sum -c`，回传 runner、backend、准备脚本、两份合成测试、依赖清单、提案、选择、模板、冻结和新授权全部 `OK`，`hash_check_exit=0`。这些是用户服务器输出，代理未连接服务器或本地下载复算。现可在隔离 CPU venv 运行两份纯合成测试、`validate-prepared` 与一次 `preflight`；尚无服务器合成测试/preflight 输出，未调用教师、未运行 execute、NLI 或训练，outer/Task105/锁定评测仍封闭。
+
+## 2026-09-18 quote-schema 服务器合成测试与 CPU preflight 通过（用户回传）
+
+用户服务器运行隔离 CPU venv 的两份合成测试，12 项通过；`validate-prepared` 返回 `passed_quote_schema_prepared_bindings_no_authorization`（仅表示冻结准备绑定检查，不表示缺少新的独立授权）；正式 `preflight` 返回 `passed_quote_schema_CPU_preflight`。preflight 报告固定 10 个 train 文本组、29 个候选对、授权 SHA256=`0f6702fc644b872c81c5a04375f3d0b1005c85f5c5e90559b8e3027fe8e95c7a`、冻结 SHA256=`5e019e0466c48263cea972a1251d6b134f39905b538ee816ca5a128cc6fd354f`、Qwen revision=`989aa7980e4cf806f80c7fef2b1adb7bc71aa306`、torch=`2.3.1+cpu`、transformers=`4.46.3`、生成预算 10、NLI=0、训练/GPU/outer/锁定访问标志 false。用户回传不等于代理独立服务器检查，但所有已回传门槛满足；现可仅在同一离线 CPU 环境中执行该单元一次。execute 尚未回报启动，不能预记结果；失败或 .incomplete 不得删除或重试。
+
+## 2026-09-18 quote-schema 授权单次 CPU execute 完成，待 postrun（用户回传）
+
+用户在服务器同一隔离 CPU venv、离线模型环境下只启动一次 `tools/run_weak_relation_quote_schema_cpu.py --mode execute`，回传 `execute_exit=0` 与 completion 状态 `complete_quote_schema_CPU_diagnosis_only`。completion 记录 generator_calls=10、NLI 假设评分=0、机器银标准入=0、model_training_executed=false、GPU_initialized_or_used=false、outer_or_locked_accessed=false；授权 SHA256=`0f6702fc644b872c81c5a04375f3d0b1005c85f5c5e90559b8e3027fe8e95c7a`、冻结 SHA256=`5e019e0466c48263cea972a1251d6b134f39905b538ee816ca5a128cc6fd354f` 匹配。completion 所报内部文件哈希：raw_teacher_outputs=`cee0f9c0443aaef78269e5d4eda051c343c05dc8110dd41afbe82b4c8fac0ddb`、proposal_diagnostics=`293eb1793616b80c51c1fb73b855f861086c4343a041db5274cce0fdfee34e73`、pilot_metrics=`c9c5a6a1017f701a3f4d079d63b722f0b3dfd7b1a5b3997577007834016e8426`。这些是用户服务器执行回报，postrun 尚未验证文件回读，不能先判定门槛。Transformers 提示 do_sample=false 下 temperature/top_p/top_k 不生效；未构成执行失败。下一步仅服务器 `--mode postrun`、外层哈希及仅汇总指标读取，不输出原文或原始教师回复；不重跑 execute。
+
+## 2026-09-18 quote-schema 单次 CPU 诊断 postrun 闭合：引用键齐全但 14/14 跨度不精确
+
+用户服务器回传 `--mode postrun` 状态 `passed_quote_schema_CPU_postrun`、`postrun_exit=0`，completion manifest 外层 SHA256=`14848334f437a571fc795bd3898de435d77b2ba6c939a447cbb72911614afd12`，与 postrun 返回值一致。服务器外层文件 SHA256：raw_teacher_outputs=`cee0f9c0443aaef78269e5d4eda051c343c05dc8110dd41afbe82b4c8fac0ddb`、proposal_diagnostics=`293eb1793616b80c51c1fb73b855f861086c4343a041db5274cce0fdfee34e73`、pilot_metrics=`c9c5a6a1017f701a3f4d079d63b722f0b3dfd7b1a5b3997577007834016e8426`；三者与已回报 completion 内部哈希吻合。上述 SHA 均为用户服务器回传，代理没有下载文件做本地独立复算，也未接收原文或原始教师输出。
+
+只读汇总指标：10/10 次生成，超长拒答 0，建议 14 条，`quote` 键缺失/空值 0、非空覆盖率 1.0，严格逐字引用及双论元对齐率 0、对齐建议 0、对齐文本组 0；14 条全为 `quote_span_not_exact`，其他拒答组 0；耗时 73.19663691520691 秒。满足至少 5 次生成与 5 条建议的可评价前提，但预注册门槛（非空 quote >=80%、严格引用/双论元对齐 >=50%、至少 3 条来自 2 组）只通过第一项，最终 `feasibility_result=gate_failed`。原因码是在引用偏移与逐字子串检查处失败；本汇总不能再判断其是否还存在论元字面或关系语义问题，也不能据此估计机器建议的事实准确率。与旧 50 组不同样本，不作配对因果提示增益主张。对照旧 pilot 的 87/87 缺 quote 键，只能描述新样本在明确六键合同下出现 14/14 非空 quote，不能把这个跨样本变化归因为提示修复。
+
+该单元仍为 0 NLI、0 银标准入、0 训练，completion 回报 GPU/outer/锁定访问 false。按预注册失败规则停止本单元：保留四件原位产物，不修改/补造引用、不放宽偏移门槛、不重跑或补组选取，不据此启动 NLI、学生训练、GPU 或 outer/Task105/锁定评测。若研究上需要进一步解释 14 条跨度失败，只能另做不改结果的只读结构统计并显式标注 diagnosis-only；任何新推理需另立协议与授权。
+
+## 2026-09-18 quote-schema 失败后的只读跨度结构审计入口（待服务器运行）
+
+依 riichi2 §7.2 的“先核小批解析/跨度/拒答，失败停止扩量”和本次 gate_failed，仅准备只读结构审计，不修改已冻结 pilot 或结果，不重跑教师。新 `tools/audit_weak_relation_quote_spans.py` SHA256=`63e7869dc48e1eeb8a29383c91d3c7387771fae0a955f2855bda4d14d2380a41`；合成测试 `tests/test_weak_relation_quote_span_audit.py` SHA256=`41841debee648f3fc866057485a1c158c4806cad83c3082573cdb94e52f7f01e`。脚本先核现行 backend、冻结 fold02 train、原提案/选择、服务器 completion/raw/diagnostics/metrics 共 8 项硬编码 SHA；要求 10 次生成、14 条建议、14 条 quote_span_not_exact 与原 metrics 一致。只在已选训练文本组重建候选证据窗，按非逐字、越界/类型错误、end-inclusive、1-based 或其他偏移错位计数，并分别统计引文是否在配对证据窗出现、是否含双论元字面、是否在同组另一不同窗出现。标准输出只给聚合计数和源 manifest 哈希，不输出正文、引文、候选 ID 或“修复后”偏移，不创建银标或任何结果文件。
+
+本地新测试 5 项与旧 12 项合计 17 项通过；Ruff 与 py_compile 通过。审计脚本尚未上传/运行，服务器 14 条失败类型仍未知。后续只能由用户 PowerShell 上传两文件并在服务器核 SHA、以 `PYTHONDONTWRITEBYTECODE=1` 跑合成测试及只读审计；不重新执行旧 pilot、不按可能发现的偏移模式回填引用或改写 gate_failed。若审计显示系统性格式问题，只能提出独立的新协议/授权及不同样本设计；若非逐字引用占主导，应停止该教师弱标注路线或重审任务可行性，而非放宽门槛。NLI、学生训练、GPU、outer/Task105/锁定评测继续禁止。
+
+## 2026-09-18 quote-schema 14 条失败的只读跨度审计闭合（用户服务器回传）
+
+用户服务器核对新审计脚本 SHA256=`63e7869dc48e1eeb8a29383c91d3c7387771fae0a955f2855bda4d14d2380a41` 与合成测试 SHA256=`41841debee648f3fc866057485a1c158c4806cad83c3082573cdb94e52f7f01e` 均 OK；服务器标准库合成测试 5 项通过。只读审计 `source_completion_sha256=14848334f437a571fc795bd3898de435d77b2ba6c939a447cbb72911614afd12`，proposal_count=14，`span_categories.other_offset_mismatch=14`，配对证据窗内引文逐字出现次数为 `one=14`。这排除了本审计分类中的非逐字引文、偏移类型/范围非法、简单 end-inclusive 和简单 1-based 错误；不能由此推定具体偏移来源。14 条中 8 条引文包含两个论元字面，6 条缺至少一个；12 条未出现在同组另一个不同窗、2 条出现，但每条在自身配对窗仍唯一出现。审计未输出正文/引文/实体 ID，`model_called=false`、`training_executed=false`、`machine_silver_admitted=0`。
+
+既有 pilot 的 `gate_failed`、0/14 对齐和 postrun 结论不变，旧原始输出不得用唯一子串搜索补造合法引文后重新计入接纳或银标。新的可检验设计空间是：在独立协议的新未用训练组上，模型只需给出逐字引文和有向候选/关系，程序按配对证据窗中的唯一逐字出现确定偏移；仍必须核双论元字面及后续独立 NLI 语义门槛，重复/缺失/含糊时拒答。8/14 只是旧样本上的论元字面上界，非新协议预期接纳率；具体覆盖文本组数未知。任何新推理需先冻结新选择、提示/定位/拒答合同、预算与授权，不能用旧 60 组回试，也不得启动学生训练、GPU、outer/Task105/锁定评测。
+
+## 2026-09-18 唯一逐字引文定位的独立新提案及 CPU 执行冻结（未授权运行）
+
+接续 14/14 引文在正确证据窗唯一逐字出现但模型偏移全错的只读诊断，另立探索性、不作旧结果补算的新候选协议。纯标准库准备脚本 `tools/prepare_weak_relation_unique_quote_pilot.py` SHA256=`2e0d02d1a1d499fbf4462c1b04d3a67a4172bc9237ca7f1198b824e40187eb08`，测试 `tests/test_weak_relation_unique_quote_pilot.py` SHA256=`9da77ef76076eae6680f3a7be16543b528d76731372c0559c240dd66b755a46e`；在固定 train/heldout 与旧 50+10 选择哈希全匹配后，仅提取分组 ID/行数，按原 seed13 哈希排序选第 61–70 名新 fold02 train 文本组。独占选择清单 `cti_improvement/research_protocol/weak_relation_unique_quote_pilot_selection.json` SHA256=`35e986d734283d1a21f9e632f213be9a714c157c456b77f488e802f5a22449d6`：10 组、70 候选行、与旧 60 组及 inner heldout 交集均 0。70 行可能导致部分组输入超过固定 4096 token；协议预设整组拒答、若生成或建议少于 5 则 inconclusive，不替换样本。
+
+新实际 prompt 要求仅 `relation/subject_id/object_id/quote` 四键，不由模型给偏移；纯函数只在该有向候选自己的证据窗中寻找唯一逐字出现，且 quote 必须包含两个论元字面，关系类别仍须启用。未找到、重复、缺论元、歧义 ID、额外键全部拒答。程序定位只表示语法/字面门槛，`semantic_relation_verified=false`、`machine_silver_admitted=false`；绝不将旧 14 条回填为新结果。新提案 `cti_improvement/research_protocol/weak_relation_unique_quote_pilot_proposal.json` SHA256=`3051a5df843ca7a57c6c73169e1bf1adde0a743cb2e0911c5bd8c9dcafa60fd9`，状态 `prepared_not_authorized`、授权效果 `none`、exploratory，最多 10 次同修订 Qwen CPU-only 生成、0 NLI/银标准入/训练/第三方文本传输/outer/Task105/锁定评测。门槛预设：至少 5 次生成与 5 条建议，否则 inconclusive；非空 quote 至少 80%、唯一逐字且双论元至少 50%、至少 3 条来自 2 组，才可单独考虑 NLI 提案，不自动晋级。
+
+独立 fail-closed runner `tools/run_weak_relation_unique_quote_cpu.py` SHA256=`42d0fe798cf5f0eedc68347cfd0b7f4a785859825ad4725584f08c46a49d03c0`，合成边界测试 `tests/test_weak_relation_unique_quote_cpu.py` SHA256=`0672ca9cac5b2c32d703e07978860cac509a69433d8d02d2e7cb119107840621`。非执行性冻结 `cti_improvement/research_protocol/weak_relation_unique_quote_cpu_execution_freeze.json` SHA256=`d5ffad960a875721f6880caca0e72cac5bbe2d583b009d94051650e43efbf5ec`，绑定 runner、纯函数/旧只读依赖、两份新测试、依赖清单、提案、选择、模板共 10 项，本地全回读匹配。新旧相关 28 项纯合成 unittest、Ruff、py_compile 通过；`--mode validate-prepared` 通过，无新授权的 `--mode preflight` 实测以退出码 2 拒绝，且未创建输出或暂存目录。新授权文件不存在；没有上传服务器、读取新组正文供模型、调用新教师/NLI、训练或使用 GPU/outer/锁定评测。旧 quote-schema pilot 的 gate_failed 与全部产物不变。下一步仅由用户决定是否给本独立 10 组 CPU 诊断单独授权，不能沿用前次授权；获批后仍须 PowerShell 上传、服务器 10 项绑定+授权/冻结 SHA、合成测试、preflight 后才可单次 execute。
+
+## 2026-09-18 用户指示推进 unique-quote 下一步，独立授权已建立、未上传执行
+
+用户在已明确“新单元须单独授权”与完整 prepared freeze 范围之后回复“进行下一步”，据此仅对本独立探索性 10 组 fold02 train CPU 诊断建立新授权，不继承旧 pilot 授权。上一轮助手回复将冻结 SHA 的 `c5bb` 与 `e2d` 之间误加空格，现已对文件重算确认真实连续 SHA256=`d5ffad960a875721f6880caca0e72cac5bbe2d583b009d94051650e43efbf5ec`；提案 SHA256=`3051a5df843ca7a57c6c73169e1bf1adde0a743cb2e0911c5bd8c9dcafa60fd9`、选择 SHA256=`35e986d734283d1a21f9e632f213be9a714c157c456b77f488e802f5a22449d6` 不变。
+
+新独占 `cti_improvement/research_protocol/weak_relation_unique_quote_execution_authorization.json` SHA256=`2361f49e4da03469ac47dd593370e9f1eff406dc59566d55c879172806fa5470`，状态 `authorized_exact_unique_quote_CPU_pilot`，精确绑定提案/选择/冻结、Qwen 固定修订与官方权重哈希、10 个新组/70 行、最多 10 次 4096/512 token 离线 CPU 生成、0 NLI/银标准入/训练、专属不可覆盖输出；禁止第三方文本传输、GPU、outer/Task105/锁定评测，旧 gate_failed 与旧产物不变。当地 `verify_prepared()`+`require_authorization()` 返回 `UNIQUE_QUOTE_AUTH_BINDINGS_OK`，新旧相关 28 项纯合成测试、Ruff、py_compile 通过。尚未由用户上传服务器、未做服务器哈希/测试/preflight、未调用模型或产生新输出。下一步用户 PowerShell 按目录上传冻结 10 项文件及新冻结/授权共 12 项；服务器 sha256sum -c 全部通过后，再运行合成测试和离线 CPU preflight，回传结果后才可单次 execute。
+
+## 50. 2026-09-18 unique-quote 单次 CPU 诊断结案：gate_failed
+
+用户服务器回报 12 项上传文件 `sha256sum -c` 全 OK、`hash_check_exit=0`；两份纯合成测试共 11 项通过，`validate-prepared` 和 `passed_unique_quote_CPU_preflight` 通过。preflight 绑定 10 个 fold02 train 文本组、70 候选行、授权 SHA256=`2361f49e4da03469ac47dd593370e9f1eff406dc59566d55c879172806fa5470`、冻结 SHA256=`d5ffad960a875721f6880caca0e72cac5bbe2d583b009d94051650e43efbf5ec`、Qwen 固定修订、torch 2.3.1+cpu、transformers 4.46.3，`check_exit=0`。唯一获准的 `--mode execute` 退出码 0，10 次生成、0 NLI、0 机器银标准入、0 训练、GPU/outer/锁定访问标志 false。transformers 对 do_sample=False 配合 temperature/top_p/top_k 的提示是未使用采样参数的警告，未中断生成。
+
+`--mode postrun` 返回 `passed_unique_quote_CPU_postrun`、退出码 0；completion manifest SHA256=`22b8c9e0ccac427ae1da03f2642c67cc6237644c62439da668ac82b720d1eac0`。服务器外层 SHA 与 completion 内部 SHA 一致：raw=`5ae3ace8e81b270aac82cd95440089a7c744e2553f5f91a273647b07aae8e347`，diagnostics=`10478d9da27c041adf76864a47a32a407818ac780a74c20f097e2f0db17f934d`，metrics=`f39dfde647e7f9abf937ea719f6c17379093c0267a187a4b305aba601a926172`。这些值来自用户服务器回传；代理未下载产物独立复算，也未读取原始模型回复或源文本。用户粘贴的指标提取命令尾部排版有断裂，但其回传 JSON 完整显示以下聚合字段。
+
+10 次生成、0 组输入超长、17 条可解析建议、11/17 有非空 quote（0.6470588235294118）、7/17 在配对窗口唯一逐字定位且包含双论元字面（0.4117647058823529），已定位建议覆盖 4 组。拒绝原因：`invalid_four_key_shape` 6、`arguments_not_literal_in_quote` 4；组拒答为空，耗时 76.32647609710693 秒。满足至少 5 次调用/5 条建议及至少 3 条来自至少 2 组的定位数量条件，但未达到预注册的 quote 非空率 >=0.8 与唯一定位且双论元率 >=0.5，因此 `feasibility_result=gate_failed`。这些是结构/字面可行性指标，不是关系事实精度或语义正确性；不同文本组的旧 quote-schema 与本轮不能作配对因果比较。
+
+本单元按冻结规则停止：保留原输出，不重跑、不补组、不从 7 条定位结果直接建银标，不启动 NLI/学生训练/GPU 或 outer/Task105/锁定评测。下一步仅可在不修改旧产物的前提下做只读、无原文的结构失败审计；任何新教师推理须另立协议、冻结与授权。
+
+## 51. 2026-09-18 unique-quote 只读结构失败审计已实现，服务器待运行
+
+针对第 50 节的 `gate_failed`，新增 `tools/audit_weak_relation_unique_quote_failures.py` SHA256=`c5e132e160cca8b3f22f1290ca9e5bd9376cc2b8fe19455ee3f4de70c99b9fef`，对应合成测试 `tests/test_weak_relation_unique_quote_failure_audit.py` SHA256=`08ac05019d80dbdfd3ec048ace1cd75d26e4bef3aa39323ab6f063f1b7a55374`。审计先核第 50 节四件服务器结果的精确 SHA，再调用原 `postrun` 闭合授权/冻结与结果绑定、核 train SHA、重放只读解析和原定位判定；仅聚合 6 条非四键形状的缺/多键结构类别、4 条 quote 缺论元字面的主/客/双方类别。输出不含原文、引文、实体 ID 或逐条结果；不写文件、不导入/调用模型、不作银标准入。合计 15 项相关纯合成测试、Ruff、py_compile 通过；本地无服务器原始产物，未执行真实审计。验证生成的两个本轮 `.pyc` 已按精确路径清理。
+
+下一步用户 PowerShell 仅上传新工具和测试到服务器既有 tools/tests 目录，分别 sha256sum -c，然后以 `PYTHONDONTWRITEBYTECODE=1`、CPU 隔离 venv、离线边界运行合成测试与只读审计，回传聚合 JSON。审计不会改变原 `gate_failed`，不得据此重跑、补组、调用 NLI 或训练；outer/Task105/锁定评测仍封闭。
+
+## 52. 2026-09-18 unique-quote 结构失败只读审计完成，T2 扩量继续停止
+
+用户服务器回传新增审计脚本 SHA256=`c5e132e160cca8b3f22f1290ca9e5bd9376cc2b8fe19455ee3f4de70c99b9fef` 与测试 SHA256=`08ac05019d80dbdfd3ec048ace1cd75d26e4bef3aa39323ab6f063f1b7a55374` 均 OK，`hash_check_exit=0`；4 项合成测试通过，审计 `audit_exit=0`。审计绑定第 50 节 completion SHA256=`22b8c9e0ccac427ae1da03f2642c67cc6237644c62439da668ac82b720d1eac0`，重放只读解析共 17 条：6 条 `invalid_four_key_shape` 均为 `missing_keys_only`，无多键类；4 条 `arguments_not_literal_in_quote` 中 2 条缺双方论元字面、2 条仅缺客体字面。结合原汇总 11/17 quote 非空和另外 11 条恰为 7 条定位+4 条论元字面失败，可以推断 6 条缺键建议至少缺少非空 quote；审计没有输出具体缺失键集合，因此不声称其仅缺 quote。原文、引文、实体 ID、逐条结果均未输出；无模型调用、银标准入或训练。
+
+这些聚合结果将失败分解为输出形状与字面证据两个问题，但没有测量关系语义正确性。unique-quote 原冻结 `gate_failed` 不变，旧 quote-schema 的 gate_failed 也不被追认。按 riichi2 的先验顺序和当前无可靠机器正例状态，T2 教师扩量、NLI、H1/H2 学生训练和任何正式评测继续停止；不因 7 条局部定位成功而降低门槛或重跑同组。下一研究决策应优先评估现有 T0 同数据方法/严格误差研究是否足以满足论文范围，并与导师确认；若继续教师弱监督，须独立预注册新的输出合同、未用训练组、预算、止损门槛和授权，且不能把既有三轮不同组小样本结果当因果比较。outer/Task105/锁定评测始终封闭。
+
+## 53. 2026-09-18 停止教师引用提示优化，转入 T0 受控缺标研究准备
+
+用户要求先记录 unique-quote 的结构/字面失败，不继续围绕这一失败做提示、偏移或阈值优化，按文档寻找下一步。第 50–52 节已记录原始完成清单、门槛和只读审计；本节作独立研究决策：原 50 组、quote-schema 10 组、unique-quote 10 组均保持冻结结果，不重跑、不从诊断样本追认银标。三批文本组不同，不能据其比例变化作 prompt 改进的因果结论。H1 的教师证据核验当前无可用的、经准入机器监督文件，因此第 27 节的 G0/G1×S0/S1 正式 2×2 矩阵不具备启动条件；H2 理论上不依赖 H1，但本项目此时也没有可用于真实蒸馏比较的固定弱标注文件。当前不启动 NLI、学生训练、全量教师生成或开发/外层评测。
+
+按 `riichi2.md` 第 2、5、6、7 节和交接第 27–28 节，下一可推进的问题收缩为 T0：在既有固定 18 类有向候选与原有标签上，受控遮蔽训练侧已观察正例，检验逐关系监督状态/正例保护与文本记录均衡能否比匹配的原监督和旧 PU 方法更稳健。这个实验只能说明对**人为遮蔽的已知正例**的恢复与既有开发标签指标，不证明真实未标注关系、机器银标精度、跨来源泛化或 H1 成立；不把未输出维度自动当负例，也不改变原数据字节。此方向应表述为“一个待验证的方法问题加严格误差/鲁棒性研究”，不预设三个成立创新；毕业范围须与导师确认。
+
+当前执行顺序及关口：
+1. 本地只读审计 B0 原监督父模型、B1 旧 PU-ATGL 与旧蒸馏的真实训练/预测入口、checkpoint、固定 18 类顺序、fold02/03 inner train/heldout 精确路径及哈希、候选宇宙、阈值/预算和任何会读取 test 的旧默认路径。仅用允许的 development 元数据，不读取 outer/Task105/锁定评测。形成匹配基线可行性及危险入口清单；不直接运行旧脚本。
+2. 在本历史文件中预注册 T0 研究卡和执行协议：同一候选/编码器/训练预算，训练副本仅遮蔽原已观察正例，建议事前固定 0/10/30/50% 与 seed；原训练和内层 heldout 文件保持原字节。遮蔽规则、文本组隔离、监督状态、正例召回保护、固定 18 类 macro-F1、micro-F1、逐类支持、恢复率和停止门槛均需在真实训练前明确。不能把遮蔽恢复率包装成未知关系发现率。
+3. 先实现纯合成合同和极小 CPU 闭环：观测正例不可被教师/掩码覆盖、未确定维度不伪造负例、18 维独立、多标签/方向保留、空掩码有限损失、组权重有界、同数据同预算比较、意外 test/outer 路径 fail-closed。现有 `tools/weak_relation_supervision_contract.py` 只是纯函数合同，不是训练接口；不得把第 28 节的 8 项合成测试称为模型实证。
+4. 只有匹配基线和新训练入口经哈希冻结、合成/tiny 验证、明确授权后，用户才通过 PyCharm 远程配置启动正式 T0 development 训练。先按事前指定的内层折与 seed13 做筛选；多种子和受控缺标完整矩阵只给通过预注册门槛的方法。outer、Task105 及其他锁定评测仍需独立决策，现不开放。
+
+若基线不可公平复现、受控缺标效果只来自普通重加权/单种子，或原正例召回明显退化，则停止算法贡献主张，保留错误与鲁棒性结论并与导师调整范围。任何重新启用 T2 教师需全新协议和授权，不作为本轮 T0 的默认后续步骤。
+
+## 54. 2026-09-18 T0 匹配基线入口的首轮只读核对
+
+为落实第 53 节第一关口，只读查看现有训练入口源码，未运行训练或解析任何锁定数据。`tools/train_cti_multilabel_atgl.py`（B0 候选）与 `tools/train_cti_pu_atgl.py`（B1 候选）均要求 train/dev 路径，`--test_jsonl` 默认空字符串；源码中仅在该参数非空时调用 `load_jsonl` 读取 test。因此它们有 development-only 调用可能，但这不是已经冻结的安全运行配置：还须绑定固定 18 类标签文件、fold02/03 精确 train/heldout 路径及 SHA、模型/父 checkpoint、相同候选与预算、独占输出目录、固定解码与 checkpoint 选择，并在新入口明确拒绝任何 test/outer 路径及非空 test 参数。未检查 checkpoint 实际可用性或匹配性，不能现在启动 B0/B1。
+
+`tools/distill_cti_recall_guard.py` 是旧预测后处理入口，要求 `--base_test_predictions` 与 `--teacher_test_predictions`，会加载、评价并写出 test 结果；它不适合第 53 节的当前 development-only T0 工作，禁止直接调用或作为新 H2 训练实现。现有 `tools/weak_relation_supervision_contract.py` 提供逐关系状态、观测正例优先和有界组权重的纯函数合同，但没有数据副本生成或学生训练闭环。下一步继续只读核实 B0/B1 的确切输入/输出与 checkpoint 血缘，再冻结受控缺标实验协议和纯合成训练接口；尚无服务器执行命令。
+
+## 55. 2026-09-18 T0 受控缺标首阶段：五项数据哈希复核与遮蔽规则预注册
+
+按用户“按计划文档执行下一步”，只对第 28 节明确允许的固定 18 标签文件与 fold02/03 四个 inner 文件重新计算 SHA256；全部匹配：relation_labels=`596ac53a43f5ece0eb8294f6aea948e5425a54b06f88282809bf005864fa3c10`；fold02 train=`2c00c2ae723a1d9ee66d306d7dcb4f257091088e61bb28168e9915613b61799a`、heldout=`deb3fe70e06b82ac64dc6ad957d180449870d7dce7d1f46d21a3412ce929940a`；fold03 train=`12e3dbab5696d7bf7e63094748283fd2d0f761bf68ff1ede96aed774d835eb43`、heldout=`99b9f91bf31fb375baf810e6ef9c7c91d12ee450e43ae9f8336f858177c11604`。只读五文件字节哈希和固定标签列表，没有解析内层样本或接触 outer/Task105/锁定评测。固定 18 类顺序与 `tools/weak_relation_supervision_contract.py` 一致。
+
+B0/B1 旧训练入口源码核对：两者 `--test_jsonl` 默认空且只在非空时加载 test；但必须另立 fail-closed 包装、显式传固定 label_file/允许的 train/heldout 和独占输出目录。`CTIMultilabelPairDataset._multi_hot` 优先读取行内 `multi_hot`，否则把 `gold_relations` 以 0/1 编码；`no_relation` 由 `gold_relations` 是否为空构造。因此受控遮蔽不能只改一个字段或让旧入口直接读原始行，否则隐藏正例可能通过另一个字段泄漏，或被强制当负例。B1 `Task79PairDataset` 继承该标签编码，PU 状态是候选行级而非逐关系级；其训练还以 train 正例行比例估计 `pi_positive`。B0 可固定 epoch 与全局阈值，B1 默认按开发指标选择最佳 epoch 与 decode sweep；正式对照需事前统一选择规则和预算。旧测试路径一律不得提供。
+
+本机仅对历史明确命名的三个非锁定 checkpoint 作存在性检查，均缺失：旧 Task73-R3 模型、Task79b seed13 模型、AZERG relation classifier encoder。未扫描其他输出目录、未加载权重；本机缺失不代表服务器缺失。checkpoint 血缘/哈希与匹配初始化因此尚未闭合，不能给出正式训练命令。
+
+在任何新真实样本标签分布读取前，预注册纯合成 T0 主遮蔽规则：仅 fold02/03 inner train 的已观察正标签三元单元 `(report_id,pair_id,relation)` 可被遮蔽；使用固定 seed13，按 `SHA256("13:<fold>:<report_id>:<pair_id>:<relation>")` 与键本身排序，比例固定 0/10/30/50%，每折对全部正单元取 floor(rate×N)，嵌套选择使高比例包含低比例。严格验证每行 `gold_relations` 与 18 维 `multi_hot` 一致、实体对键唯一；不满足即 fail-closed。模型可见训练视图只含未遮蔽的正例和逐关系 `observed_positive/unresolved` 掩码，不含隐藏清单、原完整 multi_hot 或由原标签派生的 no_relation；遮蔽真值仅保存在隔离的审计视图用于事后恢复分析，不能用于训练、阈值/epoch 选择。inner heldout 标签原字节不变，仅用于预注册 development 评价；训练副本只在独立输出位置创建，原始文件永不覆盖。
+
+上述规则目前只是待合成验证的预注册合同，不批准创建真实遮蔽数据、GPU 训练或新评测。先实现/验证无项目数据读取的纯函数与合成测试，再进行真实输入结构只读核验、模型/基线血缘和完整执行冻结。论文结论只限模拟漏标和既有开发标签；T2/H1 不因本规则恢复。
+
+## 56. 2026-09-18 T0 训练 ID 结构审计与遮蔽排序编码修订（无遮蔽产物）
+
+第 55 节的纯合成初版为防止冒号拼接歧义，暂时拒绝 ID 中含 `:`。在任何真实遮蔽清单产生之前，对两份精确 SHA 绑定的内层 train 仅提取 `report_id/pair_id/gold_relations/multi_hot` 四个结构字段做本地聚合核验；初次检查按预期 fail-closed，随后只输出字段形状计数：fold02 6642/6642 个 `pair_id` 含冒号、0 个缺失/非字符串，fold03 6598/6598 个含冒号、0 个缺失/非字符串；两折 report_id 均无冒号或缺失/非字符串。未输出任何 ID、正文或单条标签，未打开 heldout 样本/outer/Task105/锁定评测。
+
+因此在任何掩码选择前**取代第 55 节冒号拼接排序键**：哈希输入现为 UTF-8 编码的紧凑 JSON 数组 `[13, fold, report_id, pair_id, relation]`（`ensure_ascii=false`、separators 为 `(',', ':')`），避免分隔符碰撞；fold 仅 `02/03`、seed13、0/10/30/50% 与正单元排序/嵌套/floor 数量规则保持不变。含冒号 ID 合法，缺失/非字符串和重复 `(report_id,pair_id)` 仍拒绝。没有任何旧掩码产物可迁移或重算，也未运行模型。
+
+修正后再次哈希先行并只读核训练侧四字段：fold02 6642 候选行、789 个已观察正关系单元；fold03 6598 行、790 个正单元；唯一有向行键、`gold_relations` 与 18 维 `multi_hot` 逐维一致性均通过。按预注册 floor 规则，0/10/30/50% 对应 fold02 未来遮蔽数 0/78/236/394，fold03 为 0/79/237/395；这些只是数学预算，真实遮蔽选择与文件尚未生成。新纯标准库合同与测试已完成，哈希和验证记录见下一节。
+
+## 57. 2026-09-18 T0 受控缺标纯合成合同与训练输入结构核验通过
+
+依据第 55–56 节预注册且在真实遮蔽选择前修订的 JSON 数组排序键，实现纯标准库 `tools/prepare_cti_observed_positive_masking.py` SHA256=`904660a377b3abc75c005631331a2b32e91e912de0c42c8a9fd97932a807fcd0`，合成测试 `tests/test_cti_observed_positive_masking.py` SHA256=`65036a22639bed2743ead6056a3cc7cb57c829d877a0ecae89fa51728d1baaf9`。函数不读项目文件、不写数据、不调用模型；仅对调用者给的行结构校验 `(report_id,pair_id)` 唯一、固定 18 类 `gold_relations` 与 `multi_hot` 一致，再按固定 JSON 哈希排序将已观察正关系分为两个分离返回视图：模型可见的 `visible_positive` 与 18 维 `observed_positive/unresolved` 状态、审计专用的 `concealed_positive`。模型可见视图不含原完整 `gold_relations`、`multi_hot`、隐藏真值、`no_relation` 或文本；这只是接口合同，尚非真实数据装载器或损失实现。纯合成测试覆盖 0/10/30/50% 嵌套、fold/seed 限制、含冒号 ID、重复键、标签冲突与异常字段；新 5 项加既有 8 项共 13 项通过，Ruff 与 py_compile 通过。
+
+本地只读训练侧四字段审计在输入文件哈希核对后通过：fold02 6642 行/789 已观察正关系单元，fold03 6598 行/790 单元，`gold_relations` 与 `multi_hot` 一致且行键唯一。没有生成任何真实遮蔽选择、训练视图文件或 checkpoint，也没有解析 heldout 样本。验证报告 `cti_improvement/research_protocol/cti_observed_positive_masking_t0_contract_verification.json` SHA256=`dabe0f5e961415cfb08a2541d8a57288c9217672ca5c90d6fd08578101c3bfb1`，内部代码/测试哈希回读 `BINDINGS_OK`。本轮生成的两个 `.pyc` 已按精确路径清理。
+
+首轮基线源码 SHA256：B0 入口 `tools/train_cti_multilabel_atgl.py`=`19aa0879f7db42eeec742eac31755a9c57a887806cd348d5e994f4478b842cec`，B1 入口 `tools/train_cti_pu_atgl.py`=`86c64b824bfd9e7e1a5af37be3b4387637f58cce97f862b5fb2d5a311a5d98a6`，旧预测后处理 `tools/distill_cti_recall_guard.py`=`7ca69744e7c5e45bee115cf58467087736d1cea3239dfaf066f1aa691d041fd2`。本机历史命名的 Task73-R3、Task79b seed13 与 AZERG encoder 三个 checkpoint 均不存在；不推断服务器状态。下一关口为用户服务器仅对这三个确切非锁定 checkpoint 做存在性、大小和 SHA 检查，并核对 B0/B1 源码与新协议的匹配初始化；同时本地设计独立逐关系训练 adapter/loss、测试不泄漏隐藏真值与同预算对照。现在没有训练、真实遮蔽数据或服务器执行授权，outer/Task105/锁定评测未访问。
+
+## 58. 2026-09-20 服务器历史 checkpoint 只读核验与 T0 初始化约束
+
+用户在 AutoDL 服务器回传只读 `sha256sum`/`stat`：`tools/train_cti_multilabel_atgl.py`=`19aa0879f7db42eeec742eac31755a9c57a887806cd348d5e994f4478b842cec`，`tools/train_cti_pu_atgl.py`=`86c64b824bfd9e7e1a5af37be3b4387637f58cce97f862b5fb2d5a311a5d98a6`，均与此前本地源码哈希相符。历史 Task73-R3 checkpoint `output/cti_stix_ore_task73_multilabel_atgl_allneg_noschema_init_na08/stix_ore_multilabel_atgl.pt` 为 433409190 bytes、SHA256=`1d40d169be39b67062623c1087706cfe5a75ba83f7a1e298a84adcf50c8ff986`；Task79b seed13 checkpoint `output/cti_stix_ore_task79b_calib_seed13/task79_pu_atgl.pt` 为 436205042 bytes、SHA256=`318ab2aa447566b7c15a6a1a9cb5af82b5b6de8adda17a083d514c5545b39655`；AZERG relation-classifier checkpoint `output/cti_azerg_relation_classifier_no_schema/azerg_relation_classifier.pt` 为 433393818 bytes、SHA256=`8a7a3951f8e070e047b9311e0e692ee8baba1d4f3b8aa23ca7112d12ab346eb5`。这些哈希来自用户服务器输出，代理未下载权重独立复算。
+
+历史本文件第 73 阶段命令明确：R3 从 `output/cti_stix_ore_multilabel_pairs_allneg` 训练并以 AZERG checkpoint 初始化；现有 `tools/train_cti_pu_atgl.py` 的文档说明 Task79 从 R3 骨干 warm-start。上述历史权重的文件存在性和哈希不能证明其训练排除了当前 fold02/03 heldout，也未提供 fold 专属血缘证明。因此三个历史任务权重均不作为 T0 fold02/03 公平对照的初始化；仅保留历史参考身份。T0 各实验臂应从同一明确哈希、未经本 CTI 标签训练的基础预训练模型开始，并固定 seed、候选、预算与内层数据；基础模型在服务器的路径、文件哈希、可离线加载性和训练冻结尚待核验。未启动新训练。
+
+## 59. 2026-09-20 T0 模型可见状态适配器的纯合成验证
+
+对 fold02 train 首行只读取字段名，发现 `candidate_pair_features` 包含 `is_gold_injected`，该字段可能暴露金标注入来源；同一行还有 `gold_relations`、`multi_hot`、`is_no_relation`、`negative_sampling_reason`、`schema_prior` 等不可未经审计直接传入遮蔽模型的字段。只输出字段名，没有输出原文、ID 或标签值。为此新增纯函数 `tools/prepare_cti_observed_state_training_view.py` SHA256=`18ccaf7b7168d3070e80ffb2575a0e97f4265ae321b58bf477a580854ee33a26`：它把既有遮蔽计划的 `training_views` 与输入按键、顺序核对，只返回 ID、`pair_text`、18 维 `observed_positive`/`unresolved`，对缺文本、形状、状态冲突 fail-closed；审计侧 `audit_only_hidden` 完全不读取。新测试 `tests/test_cti_observed_state_training_view.py` SHA256=`1b50bc321f3c6b3f3fe9e33453a8b1137d17b353f3565c9327eff350c487f9b0`，与原遮蔽测试共 8 项合成测试通过，Ruff 通过；测试验证原金标、multi_hot、采样字段和审计侧真值变化不影响可见视图，行错配/状态冲突被拒绝。
+
+该适配器只建立输入白名单，不生成任何真实 fold 遮蔽文件、不计算训练损失、不调用模型。`pair_text` 作为任务输入仍需在正式执行冻结时明确定义；B0/B1 旧入口会从 `gold_relations`/`multi_hot` 推断监督，不能直接把这个状态视图交给旧入口运行。下一步独立实现状态感知损失、同输入的 B0/B1 对照适配和 tiny CPU 合成合同，随后核验基础模型并冻结 development-only 执行；未授权正式训练、outer/Task105/锁定评测继续封闭。
+## 60. 2026-09-20 T0/B0/B1 同输入损失合同及 tiny CPU 合成验证
+
+用户要求继续完成状态感知损失、同输入 B0/B1 对照适配及 tiny CPU 验证。沿第 59 节白名单视图，新版 `tools/prepare_cti_observed_state_training_view.py` SHA256=`521832d2b2e32c4ba180ff1364b16e787719879d6b8e42d4a874b1a3832436c3`：只用可见 `observed_positive/unresolved` 生成 B0/B1 旧数据集可读的 surrogate `gold_relations`/`multi_hot`，B1 另生成 0=可见正行、2=未标行；surrogate 绝非原完整金标。它还从完整可见训练视图估计 B1 正行率和 T0 逐关系先验；T0 先验以固定实验遮蔽率校正，绝不读取 audit-only 隐藏真值或 heldout。输入白名单拒绝额外字段；源 `is_gold_injected`、原 `gold_relations`、`multi_hot`、`is_no_relation`、采样理由、schema prior 均未复制。
+
+新增 `model/cti_observed_state_loss.py` SHA256=`85e4df38c944d8ee3ee712088a6df0b42252eaae8dc3dcdd6d9151a784311fcd`：同一 18 类 relation logits 上 B0 为未观测视作负例的 BCE，B1 为历史风格行级 nnPU 风险，T0 为逐关系 nnPU；T0 负项使用所有候选行的边际分布，正项只取可见正例，并用固定可见训练先验校正，未显式把隐藏关系设为负例。零可见正例类在当前 batch 不计风险；全 batch 无正例返回连通零损失。这个比较是同架构 relation-head 目标对照，不等同历史完整 B0 的 ATGL/no_relation 或完整 B1 的 density controller。正式训练入口尚未实现。
+
+新 tiny CPU 测试 `tests/test_cti_observed_state_training_contract.py` SHA256=`7dff1f04abaef2a3a2303744106c5230f0b98902c030f76278a6dddd6714c808`，更新的白名单测试 SHA256=`a86a7e41768676b73db2fc75d1b21bef22f9248ff2a3f165f75b1983971570ec`；连同原遮蔽测试共 12 项通过。测试用相同初始 tiny Linear 参数、同一合成视图检查三臂损失有限、反向传播和 CPU 参数更新，B0/B1 surrogate 行由现有 `CTIMultilabelPairDataset`/`Task79PairDataset` 实际读取，额外字段不泄漏，错误状态/先验拒绝。Ruff、py_compile 通过。本地 `.venv` torch=`2.5.1+cpu`、transformers=`4.46.3`；无真实遮蔽文件、正式训练或模型微调。
+
+## 61. 2026-09-20 基础预训练模型来源核验与非执行性训练设计冻结
+
+本地 `bert-base-cased/` 五文件 SHA256：`config.json`=`8b73abed2d67075fd3ec0f840aa53d9cccdc9169c04a7da135c07e721910ed74`；`pytorch_model.bin`=`d6992b8cd27d7a132eafce6a8210272329a371b1c762d453588795dd3835593e`（435779157 bytes）；`tokenizer_config.json`=`0f6d13e6f4da6f9e24f22ada6bc3be571123d858d7c0c05a8a7cd55a9c23c2e8`；`tokenizer.json`=`5b3360be30cdf39081153cf9d30bfb0503c011462fc9f77f097127c83ef0f4d9`；`vocab.txt`=`eeaa9875b23b04b4c54ef759d03db9d1ba1554838f8fb26c5d96fa551df93d02`。本地 `AutoTokenizer`/`AutoConfig`/`AutoModel` 离线加载成功，BertModel hidden=768、12 层、108310272 参数。官方 `google-bert/bert-base-cased` 的权重 LFS 指针提交 `https://huggingface.co/google-bert/bert-base-cased/commit/ddb0351b5dd9588ada020d4586b5a02c8c3dba72` 记载同一 SHA 和大小；官方模型卡 `https://huggingface.co/google-bert/bert-base-cased` 说明此基础模型用于语言预训练。由精确权重哈希匹配可认定本地权重为该基础模型原字节，而非历史 CTI 分类权重。服务器同名模型文件尚未核验，不能推断服务器权重相同。
+
+非执行性设计冻结 `cti_improvement/research_protocol/cti_observed_state_training_design_freeze.json` SHA256=`0d3d27ea30e019a133597b57ba5229cbb3f372eb99a1473418f1d4b16e41601e`，五项源码绑定 `DESIGN_BINDINGS_OK`。固定 fold02/03、0/10/30/50% 训练正单元遮蔽、seed13、B0/B1/T0 三臂、共最多 24 个计划单元；共同初始 BERT 字节与 relation-head 架构、仅 `pair_text`、无 pair features/schema/no_relation/threshold loss；8 epoch、batch8、梯度累积1、384 token、AdamW 2e-5、warmup0.06、weight decay0.01、dropout0.2、梯度裁剪1、固定第8 epoch 和 0.5 阈值、不以 heldout 调参。隐藏训练正例仅在训练后审计，heldout 为 development 结果；不能推广到现实未知关系。冻结状态明确 `server_base_model_unverified` 和 `execution_not_authorized`。下一关口：服务器仅对精确 `bert-base-cased` 五文件只读 SHA/离线加载，随后实现 fail-closed development-only 训练执行器与服务器合成 preflight，最后单独执行授权；不得现在运行 24 单元、outer/Task105/锁定评测。
+## 62. 2026-09-20 T0 独立 development-only 执行器本地冻结，待服务器合成 preflight
+
+用户要求继续下一关：独立执行器和服务器合成 preflight。新增 `tools/run_cti_observed_state_training.py` SHA256=`dcf3950f47d0f179bdd4e6530d83322d884355aeb55a3ba1ee0f0946d91059c5` 与训练后端 `tools/cti_observed_state_training_backend.py` SHA256=`3a3263a9e786aaa58d821fbb7402594dedb913b82572d3f67363d745fed0b020`。runner 每次只接受 fold02/03、遮蔽率 0/10/30/50%、B0/B1/T0 单臂；`validate-design` 核设计/执行冻结和代码哈希；`preflight` 在 `CUDA_VISIBLE_DEVICES=-1`、离线标志下仅哈希 inner train/heldout/标签和本地基础 BERT 五文件、检查 18 标签顺序、运行 tiny CPU 合成梯度步、离线加载基础模型，不解析 heldout 内容或训练真实模型。`execute` 在加载任何训练行或模型前要求单独的精确单元授权（授权文件当前不存在），绑定 execution freeze SHA、fold/rate/arm/device、最多一次、outer/锁定访问 false。输出/`.incomplete` 已存在即拒绝，失败时保留现场不覆盖/不自动重试；完成后 `postrun` 只读核完成清单及产物哈希。
+
+正式训练后端仅接收白名单可见训练视图和可见先验。完整输入经已冻结 train SHA 及 `split=train` 核验后按固定 seed13 遮蔽；原金标只用于生成分离的 audit-only 隐藏列表，不传给 `train_visible_unit`。模型从同一基础 BERT 字节重新初始化，18 类 relation logits 同架构，8 epoch、batch8、固定 384 token、AdamW 2e-5、warmup0.06、weight decay0.01、dropout0.2、梯度裁剪1，无特征/schema/no_relation/threshold loss，固定第8 epoch 和 0.5 阈值。训练完成之后才解析精确 inner heldout 做开发集 micro P/R/F1，随后单独统计隐藏训练正例恢复，不用于训练或选 epoch。只输出 checkpoint、聚合 metrics、授权快照及完成清单；无原文/ID/逐行预测产物。B0/B1 仍为第 61 节的同架构 relation-only 目标对照，而非历史完整训练复现。
+
+合成测试 `tests/test_cti_observed_state_training_executor.py` SHA256=`3f5e46e78f1c37713d4fe638aaed476c967a24072a266b4a021e4e76b937cdf9`，与前序 12 项共 18 项通过；测试覆盖授权缺失在任何数据读取前拒绝、跨单元授权拒绝、非法 fold/rate/arm、tiny CPU 三臂单 epoch 后端、结构错误 heldout 拒绝。Ruff、Python 3.8 语法检查通过。非执行性 `cti_improvement/research_protocol/cti_observed_state_training_execution_freeze.json` SHA256=`0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81`，11 项文件绑定 `EXECUTION_BINDINGS_OK`；状态 `prepared_not_authorized`、`execution_allowed_now=false`。本地 `validate-design` 通过；fold02/rate0.1/T0 与 fold03/rate0.5/B1 两次 CPU 合成 preflight 通过，均仅哈希内层数据与离线加载基础权重，没有真实训练/GPU/outer/锁定访问。缺授权的 `execute` 退出码 2、无 auth 文件、无正式输出目录。
+
+服务器尚未上传新执行器或回传基础模型五文件 SHA，故服务器合成 preflight 未发生。下一步用户 PowerShell 分目录上传冻结 11 文件及 execution freeze，服务器先逐项 SHA 校验，再用隔离 CPU venv 跑 18 项合成测试、`validate-design` 与一次 `preflight`；任何失败即停。不能把本地 preflight 等同服务器批准训练；正式 PyCharm 训练仍需单独精确授权，且先完成服务器核验。outer/Task105/锁定评测继续封闭。
+## 63. 2026-09-20 T0 首次 PowerShell 上传在本地路径解析阶段停止
+
+用户 PowerShell 提示符显示当前目录为 `C:\Users\admin`，首次 `scp` 在上传 tools 前即报告 `stat local "tools/run\_cti\_observed\_state\_training.py": No such file or directory`，随即因退出码非零中止；因此尚无新 T0 文件上传成功、服务器 SHA/合成测试/preflight 回报。原因是未先切换到本地仓库根目录，且复制的文件名/SSH 目标中带了不应存在的反斜杠转义（如 `\_`、`\@`）。代理本地只读核对新 runner、backend、loss、执行器测试与 execution freeze 均存在于 `E:\代码\UniRel-main\UniRel-main`。下一步用户在 PowerShell 先 `Set-Location -LiteralPath 'E:\代码\UniRel-main\UniRel-main'` 并以 `Test-Path` 确认，再使用无反斜杠转义的文件名和 `root@connect.westd.seetacloud.com` 重试上传。第 62 节 freeze 和本地验证不变，不得越过服务器哈希/合成 preflight 或启动正式训练。
+## 64. 2026-09-20 T0 服务器合成 CPU preflight 通过，正式训练仍未授权
+
+用户在 AutoDL 容器 `/root/autodl-tmp/lgx/Unirel-main` 回传：设计冻结 SHA256=`0d3d27ea30e019a133597b57ba5229cbb3f372eb99a1473418f1d4b16e41601e`、执行冻结 SHA256=`0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81` 的 `sha256sum -c` 均 OK；CPU venv 四份合成测试共 18 项通过；`--mode validate-design` 返回 `passed_design_bindings_no_authorization`，已按 runner 核执行冻结的 11 项本地文件哈希；`--mode preflight --fold 02 --rate 0.1 --arm t0` 返回 `passed_development_only_synthetic_CPU_preflight_no_authorization`、退出码 0，设计/执行冻结哈希相符、torch=`2.3.1+cpu`、transformers=`4.46.3`。preflight 对精确 fold02 train/heldout、固定标签和基础 BERT 五文件做哈希并离线加载基础模型；未解析正式 heldout 行、未训练真实模型，GPU/outer/锁定访问标志 false。服务器状态依据用户回传，代理未下载文件独立复算。
+
+这只关闭了服务器 CPU 合成门槛。正式训练拟由 PyCharm 连接服务器运行，尚未核实 PyCharm 所选解释器的 Python/torch/transformers 版本与 CUDA 可用性；CPU venv 不能当作 GPU 正式环境证明。`cti_observed_state_training_execution_authorization.json` 仍不存在，不能运行 `--mode execute`，不能自动扩到 24 个计划单元。下一步先做 PyCharm 正式解释器的只读环境/显卡能力核验，再确定首个精确 fold/rate/arm/device 单元并形成可审阅单次授权；任何正式训练需用户对该单元单独授权。outer/Task105/锁定评测继续封闭。
+## 65. 2026-09-20 本地完整 BERT 路径的一步纯合成 CPU 验证
+
+在第 64 节服务器 preflight 回报后，代理本地使用已冻结训练后端和 `bert-base-cased` 基础权重，以两条纯合成文本、可见状态和 T0 先验，执行 1 epoch、batch 2、max length 16 的完整 BERT 前向、反向传播与一次 optimizer step；返回 `tiny_real_bert_cpu_train_passed`、`train_rows=2`、`optimizer_steps=1`、`device=cpu`。该调用只检验训练后端可实际加载基础权重并更新模型参数；没有读取项目样本、没有保存模型、没有生成正式实验结果，也没有修改冻结源码或哈希。服务器端仍只完成第 64 节合成 preflight，PyCharm 正式 GPU 解释器尚待只读核验，精确单元授权尚不存在，不得启动正式训练或访问 outer/Task105/锁定评测。
+
+## 66. 2026-09-20 正式训练虚拟环境路径补充
+
+用户明确服务器 Conda 虚拟环境路径为 `/root/autodl-tmp/lgx/conda_envs/unirel38`，惯用调用形式为 `conda run --no-capture-output -p /root/autodl-tmp/lgx/conda_envs/unirel38 ...`。此路径已记录供切换对话继续使用；它尚未证明 PyCharm 当前解释器指向该环境，也尚未证明其中 torch CUDA 构建、transformers 版本和 GPU 可用性。下一步在该环境内只读打印 Python 路径、torch/transformers 版本及 CUDA 能力，并核对 PyCharm 配置。此前服务器合成 preflight 使用独立 CPU venv `/root/autodl-tmp/lgx/venvs/weak-relation-teacher-cpu`；不能据此推断正式 GPU 环境。单单元授权仍未创建，不启动训练；outer/Task105/锁定评测保持封闭。
+
+
+## 67. 2026-09-20 正式 Conda 环境 CUDA 能力首次只读检查
+
+用户在服务器 Bash 中以 `conda run --no-capture-output -p /root/autodl-tmp/lgx/conda_envs/unirel38 python -c ...` 回传：`sys.executable=/root/autodl-tmp/lgx/conda_envs/unirel38/bin/python`、torch=`2.1.2+cu121`、torch CUDA build=`12.1`、transformers=`4.46.3`，但 `torch.cuda.is_available()=False`、`torch.cuda.device_count()=0`。该环境具 CUDA 构建不等于运行时可见 GPU。此前相同服务器 shell 的 CPU preflight 曾 `export CUDA_VISIBLE_DEVICES=-1`，该变量可能仍在当前 shell 并由 `conda run` 继承；现阶段不能断言硬件或驱动故障。下一步只读打印当前 `CUDA_VISIBLE_DEVICES`、`nvidia-smi -L`，再在单条子进程中以 `env -u CUDA_VISIBLE_DEVICES conda run ...` 重测 CUDA，不改变全局 shell。PyCharm 解释器与环境变量仍需单独确认。未授权运行正式训练；outer/Task105/锁定评测继续封闭。
+
+
+## 68. 2026-09-20 CUDA 不可见根因确认为 Shell 遮蔽变量
+
+用户继续在服务器回传：当前 Shell `CUDA_VISIBLE_DEVICES=-1`；`nvidia-smi -L` 能看到 GPU 0 NVIDIA GeForce RTX 4090；仅对单条子进程执行 `env -u CUDA_VISIBLE_DEVICES conda run --no-capture-output -p /root/autodl-tmp/lgx/conda_envs/unirel38 python -c ...` 后，torch 返回 `cuda_available=True`、`cuda_device_count=1`。因此第 67 节的 false/0 由该 Shell 的遮蔽变量造成，正式 Conda 环境在取消遮蔽时可见一张 GPU；这仍不证明 PyCharm Run 配置未继承该变量。代理再次只读核对冻结 runner：授权文件需精确绑定 execution freeze SHA、fold/rate/arm/device、`maximum_runs=1`、outer/锁定访问 false、机器银标准入 false；当前授权文件不存在。下一步确认 PyCharm 远程解释器为该 Conda Python，Run 配置取消 `CUDA_VISIBLE_DEVICES=-1` 或明确设为 `0`，再提出可审阅的首个精确 development 单元授权。未启动正式训练；outer/Task105/锁定评测继续封闭。
+
+
+## 69. 2026-09-20 PyCharm 截图确认当前配置并非服务器 T0 执行环境
+
+用户提供两张 PyCharm 截图。解释器选择框显示 Windows 本地 `Python 3.8 E:/anaconda3/envs/unirel/python.exe`；当前运行配置名 `UniRel smoke NYT`，Python 解释器同为本地 Windows 路径，脚本为 `E:/代码/UniRel-main/UniRel-main/run.py`，参数含 NYT 与 `--do_train`，工作目录也是本地仓库。环境变量窗口只见 `PYTHONUNBUFFERED=1`、`PYTHONUTF8=1`、`WANDB_DISABLED=true`，并勾选包含系统环境变量；截图未展示服务器 PyCharm SSH 解释器或服务器进程的 `CUDA_VISIBLE_DEVICES`。此配置不能用作已冻结的 T0 development 执行器，点击“运行”会启动旧 NYT 训练，与当前研究单元不符。下一步在 PyCharm 添加/选择 SSH 远程解释器 `/root/autodl-tmp/lgx/conda_envs/unirel38/bin/python`，单独建立只读检查或未来独立执行器配置，确认服务器工作目录与环境变量，不运行旧配置。T0 精确授权仍未创建，outer/Task105/锁定评测继续封闭。
+
+
+## 70. 2026-09-20 正式执行入口可改为服务器终端
+
+用户说明所有文件已同步到服务器，并询问能否直接在服务器训练而不设置 PyCharm。基于第 64、68 节：服务器冻结文件绑定/CPU preflight 已通过，正式 Conda 环境 `/root/autodl-tmp/lgx/conda_envs/unirel38` 在单进程取消 `CUDA_VISIBLE_DEVICES=-1` 后可见一张 RTX 4090。PyCharm 不是冻结执行器的技术依赖，未来可从服务器 Bash 以该环境直接运行；此选择不改变 design/execution freeze、单单元授权、哈希、development-only 和输出门槛。当前精确授权文件仍不存在，因此不能把“可从终端运行”理解为已经允许启动训练。拟先对 fold02/rate0.1/T0/cuda 建立可审阅的单次授权，再执行对应单元；不得用旧 NYT `run.py` 入口，outer/Task105/锁定评测继续封闭。
+
+
+## 71. 2026-09-20 用户授权首个 T0 development 单元并建立精确授权文件
+
+用户明确回复“确认授权”，所指范围是上一轮提出的 `fold02 / mask rate 0.1 / t0 / cuda`、最多一次，允许从服务器 Bash 直接执行，无需 PyCharm。代理本地新建 `cti_improvement/research_protocol/cti_observed_state_training_execution_authorization.json`，schema=`cti-observed-state-training-authorization-1`、status=`authorized_exact_development_unit`、execution freeze SHA256=`0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81`、unit=`{fold:02, mask_rate:0.1, arm:t0, device:cuda}`、maximum_runs=1、outer/locked access=false、machine silver admission=false；文件 SHA256=`7a5413f69ba414ca938ee93f08c07db857e4ef400859a3dcfbedb63c15eb5aeb`。本地 `validate-design` 通过；只读调用 `require_authorization` 对精确单元接受，对 fold03、rate0.3、b0、cpu 逐一拒绝；本地对应正式输出和 incomplete 目录均不存在。没有执行 `--mode execute`，没有训练或 GPU 使用。下一步用户 PowerShell 只上传该授权 JSON，服务器先核 SHA、用正式 Conda 环境运行同一合成测试/preflight（CPU 遮蔽），确认输出目录未占用，再单次运行精确 CUDA execute，完成后 postrun。服务器如出现 incomplete 目录或失败，不自动重跑，先审计现场。outer/Task105/锁定评测继续封闭。
+
+
+## 72. 2026-09-20 首次后台 T0 execute 因目标目录已存在而拒绝
+
+用户在服务器用 `nohup` 启动已授权的 fold02/rate0.1/t0/cuda 单元，后台 PID 回显 239295，日志随后显示 `{"status":"blocked","reason":"final output or incomplete staging already exists"}`，Conda 报命令失败。源码 `execute` 在读取授权、真实训练数据及加载模型之前，先调用 `require_empty_output`；因此本次后台尝试没有进入真实训练/GPU 后端。此错误只证明 `output/cti_observed_state_training/inner_fold_02/mask_10/arm_t0_seed13` 或同目录的 `.arm_t0_seed13.incomplete` 已存在，尚不知哪个、内容和是否有并行/此前训练。按 fail-closed 约定不得删除目录、覆盖、重跑或把本次阻断当作成功。下一步服务器只读检查两目录的存在/文件名/时间、同入口进程和完成清单；若完整 final 且无 incomplete，可运行只读 `postrun`。不得访问 outer/Task105/锁定评测。
+
+
+## 73. 2026-09-20 T0 残留 incomplete 目录只读检查
+
+用户按第 72 节命令回传：完整目录 `output/cti_observed_state_training/inner_fold_02/mask_10/arm_t0_seed13` 不存在；暂存目录 `output/cti_observed_state_training/inner_fold_02/mask_10/.arm_t0_seed13.incomplete` 存在，目录修改时间 `2026-09-20 11:22:09.209715496 +0800`；`find -maxdepth 1 -mindepth 1` 未列出任何顶层文件；`pgrep -af 'run_cti_observed_state_training.py'` 无匹配进程。由冻结 runner 可知暂存目录只在授权、哈希、可见训练视图和先验检查后、模型训练函数调用前创建；因此残留暗示某次此前调用至少到达了暂存建立阶段，但空目录不足以确定失败原因、是否发生过 GPU 训练步或此前调用是否消耗单次授权。当前后台调用只是被该目录阻断。下一步只读核对目录创建/变更时间、该单元已有日志文件与此前终端错误；保留 incomplete，不删除/改名/重试，不访问 outer/Task105/锁定评测。
+
+
+## 74. 2026-09-20 T0 首次授权执行被人工中断，无法续训
+
+用户补充首次前台 execute 的完整回溯：使用正式 Conda 环境与 CUDA 执行 fold02/rate0.1/t0，在 `train_visible_unit` 的 `optimizer.step()` 处按 `Ctrl+C`，产生 `KeyboardInterrupt` / `CondaError: KeyboardInterrupt`；PyTorch `TypedStorage is deprecated` 只是警告。故首次授权执行确实进入模型训练，不能把第 72 节后台阻断当作唯一尝试。后续只读 stat 确认 incomplete 目录创建/修改/变更均为 `2026-09-20 11:22:09.209715496 +0800`，内无文件；日志目录只见 `fold02_mask10_t0_cuda.log`，mtime `11:23:41.197880913 +0800`、273 bytes，对应后来被已有 incomplete 阻断的后台调用。无完整目录、完成清单或活动进程。冻结后端只在固定 8 epoch 全部完成后返回，执行器在训练后才保存 checkpoint；该中断没有可续训的模型/优化器状态，也没有正式 development 指标。首次用户授予的“最多一次”已经被前台运行使用；不得将同一授权用于再次尝试，即使暂存目录可被移走。若用户希望继续，需明确授权同一 fold02/rate0.1/t0/cuda 的一次全新从头运行；先保全旧授权及空 incomplete 的中断证据、建立新授权，然后在确认无进程/目标路径后对旧暂存目录作可追溯隔离，重新执行冻结单元。未经新授权不移动暂存目录、不替换服务器授权文件、不重跑。outer/Task105/锁定评测继续封闭。
+
+
+## 75. 2026-09-20 用户授权 T0 同单元一次从头重跑，新旧授权分离
+
+用户明确授权 `fold02 / mask rate 0.1 / t0 / cuda` 再从头运行一次；不扩大 fold、遮蔽率、实验臂、设备或评测范围。代理本地先确认旧授权 SHA256=`7a5413f69ba414ca938ee93f08c07db857e4ef400859a3dcfbedb63c15eb5aeb`、执行冻结 SHA256=`0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81`，再将旧授权原字节保留为 `cti_improvement/research_protocol/cti_observed_state_training_interrupted_authorization.json`（同 SHA），替换当前授权文件为带 `retry_of_authorization_sha256` 和人工中断原因的新单次授权；新文件 SHA256=`4e78227eb84dec677440be2def2bd3ded248450132df7528836f533190b728ee`。新授权继续要求 `maximum_runs=1`、outer/locked=false、machine silver=false。只读本地 `verify_freeze`、精确单元 `require_authorization` 与跨 fold/rate/arm/device 拒绝均通过；本地结果/暂存目录不存在。未上传服务器、未移动服务器残留暂存、未启动重跑。服务器顺序必须先核旧授权及空暂存/无进程，上传并核新旧两授权，再将旧空 incomplete 可追溯隔离，正式 Conda 环境合成 preflight 通过后后台启动一次。旧日志独立保留，新日志用 retry 名；若失败不自动重试。outer/Task105/锁定评测继续封闭。
+
+
+## 76. 2026-09-20 旧空暂存目录已在服务器可追溯隔离
+
+用户服务器回传：严格检查旧 `.arm_t0_seed13.incomplete` 存在且空、隔离目标不存在后，用 `mv -T` 将其移至 `output/cti_observed_state_training_interrupted/inner_fold_02_mask_10_arm_t0_seed13_20260920_112209`，`stat` 回显隔离目录修改时间仍为 `2026-09-20 11:22:09.209715496 +0800`。这保全了首次中断的空暂存证据，清出了冻结 runner 的固定暂存路径；尚未由用户回传服务器上新旧授权文件哈希、正式 Conda 环境 preflight 或重跑启动/完成结果，因此这些门槛不能视为已通过。下一步先核新旧授权 SHA 与无同名进程，再跑正式环境 CPU 合成 preflight；通过后方可按第二次单次授权启动。outer/Task105/锁定评测继续封闭。
+
+
+## 77. 2026-09-21 fold02/0.1/T0 CUDA 重跑完成，等待 postrun
+
+用户服务器只读状态回传确认：当前授权 SHA256=`4e78227eb84dec677440be2def2bd3ded248450132df7528836f533190b728ee`，中断授权归档 SHA256=`7a5413f69ba414ca938ee93f08c07db857e4ef400859a3dcfbedb63c15eb5aeb`；无 `run_cti_observed_state_training.py` 活动进程。正式结果目录 `output/cti_observed_state_training/inner_fold_02/mask_10/arm_t0_seed13` 存在，包含 `relation_model.pt` 433388623 bytes、`metrics.json` 1050 bytes、`authorization.json` 676 bytes、`RUN_COMPLETION_MANIFEST.json` 710 bytes；固定暂存目录不存在。重跑日志返回 status=`complete_development_only`，unit=`fold02/0.1/t0/cuda`、manifest SHA256=`717f65d2d784580c754b2071f4aeb0b2d8155512857fef152ec52dae7cacfa04`、outer/locked=false。状态检查时 GPU 空闲、无进程，说明训练已退出；TypedStorage 仍只是运行时弃用警告。当前结论依据用户服务器回传，尚待 runner `postrun` 对完成清单及三项产物哈希做只读验收，也尚未回传 metrics 聚合值。不得重启该单元；下一步仅 postrun、sha256sum 和指标摘要。outer/Task105/锁定评测继续封闭。
+
+
+## 78. 2026-09-21 fold02/0.1/T0 postrun 通过，但固定阈值下全零预测
+
+用户服务器回传只读验收：`postrun` 返回 `passed_development_only_postrun`、退出码 0、completion manifest SHA256=`717f65d2d784580c754b2071f4aeb0b2d8155512857fef152ec52dae7cacfa04`、outer/locked=false。外层文件 SHA256：`relation_model.pt`=`991dd808b2fb77b9a561e469341f0a89e0ace9608efc6c10ac5b810f204b9517`；`metrics.json`=`012357649d845885898583251b01f3727169b3b405b99812d46a6de319f42eb9`；`authorization.json`=`4e78227eb84dec677440be2def2bd3ded248450132df7528836f533190b728ee`，与当前重跑授权一致。训练单元 fold02/rate0.1/t0/cuda：6642 行、6648 optimizer steps、8 epoch 平均损失依次 0.1409972456、0.0753830808、0.0600886295、0.0575130131、0.0540323202、0.0520376266、0.0517220183、0.0508644180；2669 个 zero-signal batch（约 40.1%）。固定 0.5 阈值 development 指标 P/R/F1 均 0，TP=0、FP=0、FN=210，故该阈值下没有预测任何正关系；78 个遮蔽训练正例恢复 0，恢复率 0；zero-visible-positive classes 为空。
+
+证据允许的结论仅是：该单种子、单 fold、10% 遮蔽 T0 单元虽然优化损失下降，但在预注册 0.5 阈值下发生全零输出并未恢复遮蔽正例，作为实用关系提取结果失败。不能仅凭此判断 T0 相对 B0/B1 更差、不能做显著性或泛化主张，也不能推断分数是否接近阈值，因为没有保存概率分布。按冻结比较设计，下一决策性证据应是同 fold、同 10% 遮蔽、同 seed/模型/预算的 B0 与 B1 单元；每个仍需独立精确授权。优先运行 B0 可建立“未观测视负”基准，再运行 B1；在配对结果前不调阈值、不修改 T0、不扩到 fold03 或其他遮蔽率。outer/Task105/锁定评测继续封闭。
+
+
+## 79. 2026-09-21 用户授权 fold02/0.1/B0 匹配对照，授权已准备未执行
+
+用户在第 78 节 T0 固定阈值全零结果后明确“确认授权”，范围承接为同 fold、同 10% 遮蔽、同 seed/模型/预算的 `fold02 / 0.1 / b0 / cuda`，最多一次。代理先将已完成 T0 重跑授权原字节归档为 `cti_improvement/research_protocol/cti_observed_state_training_completed_fold02_mask10_t0_authorization.json`，SHA256 仍为 `4e78227eb84dec677440be2def2bd3ded248450132df7528836f533190b728ee`；当前执行授权替换为 B0 单元，SHA256=`70e1d68c223edde4cc6f7a525db6a3a33616810b5f67d397d3ba103c5b49fc97`。新授权绑定 execution freeze `0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81`、已验收 T0 manifest `717f65d2d784580c754b2071f4aeb0b2d8155512857fef152ec52dae7cacfa04` 和 T0 授权哈希，unit=`fold02/0.1/b0/cuda`、maximum_runs=1、outer/locked=false、machine silver=false。只读本地 verify_freeze、精确授权接受与 T0/B1/跨 fold/rate/device 拒绝通过；B0 本地结果和 incomplete 路径不存在。未上传服务器、未做 B0 preflight、未启动训练。下一步只上传当前 B0 授权及 T0 完成授权归档，服务器核四项血缘哈希、无进程及 B0 输出为空，跑 B0 CPU preflight 后后台启动一次；失败不重试。outer/Task105/锁定评测继续封闭。
+
+
+## 80. 2026-09-21 fold02/0.1/B0 CUDA 单元完成，等待 postrun
+
+用户服务器状态回传：B0 后台 PID 已退出，`ps -p` 无进程行，`nvidia-smi` 无计算进程、显存 0 MiB；日志仅有无害的 TypedStorage 弃用警告，并返回 status=`complete_development_only`、unit=`fold02/0.1/b0/cuda`、manifest SHA256=`bc2ac938c78acc436939c1c04a57fdf06299d91fcbbc09f7277053bf7d1ed5da`、outer/locked=false。说明 B0 单元已结束，不能再次执行。当前结论依据用户回传，尚待 `postrun` 对完成清单和产物哈希验收，尚未读取 B0 聚合指标，因此不能与 T0 比较。下一步仅做 postrun、四项 SHA 与 metrics 摘要。outer/Task105/锁定评测继续封闭。
+
+
+## 81. 2026-09-21 fold02/0.1/B0 postrun 通过，显著优于同条件 T0 的描述性结果
+
+用户服务器回传 B0 `postrun` 状态 `passed_development_only_postrun`、退出码 0、manifest SHA256=`bc2ac938c78acc436939c1c04a57fdf06299d91fcbbc09f7277053bf7d1ed5da`、outer/locked=false。外层产物 SHA256：模型=`72e95e55903c6ebc077589532ff0e0ebde2efc26fb048b03e56d9ed5d677af01`，metrics=`55ce0d24cdc34a0093d6865a764a048d2da1c5ac3240b185a8b995bb9daf30d0`，授权快照=`70e1d68c223edde4cc6f7a525db6a3a33616810b5f67d397d3ba103c5b49fc97`，均与 B0 单元血缘一致。B0 训练 6642 行、6648 optimizer steps；8 epoch mean loss 为 0.1242375206、0.0230341005、0.0167358567、0.0135148382、0.0116760448、0.0100093345、0.0088509406、0.0077325270。固定 0.5 阈值 development：precision=0.7368421053、recall=0.6、F1=0.6614173228、TP=126、FP=45、FN=84；78 个遮蔽训练正例恢复 17，恢复率 0.2179487179；zero-visible classes 为空。
+
+与第 78 节同 fold/rate/seed/model/budget T0 的描述性对照：B0 F1 0.6614 对 T0 0，B0 恢复率 0.2179 对 T0 0；T0 在阈值 0.5 下完全不出正例，而 B0 输出 171 个正预测。证据支持“在这一冻结单元中，T0 逐关系 PU 目标发生严重退化，而共同编码器/数据/阈值本身并不必然导致全零输出”。不能升级为算法总体优劣或显著性结论：只有一个 fold、一个 seed，B1 尚缺，且没有重复运行。不同损失的绝对 loss 数值不可横比；`zero_signal_batches` 只在 T0 分支计数，B0 的 0 不是同口径证据。下一步按预注册三臂比较运行同条件 `fold02/0.1/b1/cuda`，用于区分 T0 特有故障与 PU 家族共同问题；需用户独立授权。在 B1 前不调阈值、不改损失、不扩 fold/rate。outer/Task105/锁定评测继续封闭。
+
+
+## 82. 2026-09-21 用户授权 fold02/0.1/B1 匹配对照，授权已准备未执行
+
+用户明确授权冻结三臂比较的第三个单元 `fold02 / 0.1 / b1 / cuda` 最多一次。代理将已完成 B0 授权原字节归档为 `cti_improvement/research_protocol/cti_observed_state_training_completed_fold02_mask10_b0_authorization.json`，SHA256=`70e1d68c223edde4cc6f7a525db6a3a33616810b5f67d397d3ba103c5b49fc97`；当前执行授权替换为 B1 单元，SHA256=`192c88ae220af0cbef0baa39a8fba5dbae794e277239ede8cccb413b4a2b2b72`。新授权绑定 execution freeze `0a91b02a3947a78bf7d487d9a6f5d677175656df46aacfde0a194416a4c5cc81`、T0 manifest/auth `717f65d2...fa04`/`4e78227e...8ee` 与 B0 manifest/auth `bc2ac938...ed5da`/`70e1d68c...fc97`，unit=`fold02/0.1/b1/cuda`、maximum_runs=1、outer/locked=false、machine silver=false。只读本地 verify_freeze、精确授权接受及 T0/B0/跨 fold/rate/device 拒绝均通过；B1 本地结果和 incomplete 不存在。尚未上传服务器或执行。下一步上传当前 B1 授权及 B0 完成授权归档，服务器核冻结和 T0/B0 血缘、无进程及 B1 输出为空，B1 CPU preflight 后后台启动一次；失败不重试。outer/Task105/锁定评测继续封闭。
+
+
+## 83. 2026-09-21 fold02/0.1/B1 CUDA 单元完成，等待 postrun
+
+用户服务器日志回传：B1 status=`complete_development_only`、unit=`fold02/0.1/b1/cuda`、manifest SHA256=`e3e6b7e6359ebde9377d1efe83f2780e22649db687e4b5a1b55466c648f2e84f`、outer/locked=false；TypedStorage 信息仍为 PyTorch 弃用警告而非失败。该日志表明 B1 训练与结果提交已完成，不能再次执行；当前尚待 runner postrun 对完成清单和三项产物哈希做只读验收，且 B1 metrics 尚未回传，不能完成三臂比较。下一步仅 postrun、四项 SHA 和聚合指标摘要。outer/Task105/锁定评测继续封闭。
+
+
+## 84. 2026-09-21 fold02/10% 三臂闭合：T0 停止扩展，转入失败分析
+
+用户服务器回传 B1 `postrun` 状态 `passed_development_only_postrun`、退出码 0、manifest SHA256=`e3e6b7e6359ebde9377d1efe83f2780e22649db687e4b5a1b55466c648f2e84f`、outer/locked=false。B1 产物 SHA256：模型=`64fc1b3971411fe8bac86fac91dc291ea9a4e3fffaa589dd78037cf1ce5166c8`，metrics=`fee4369e74ce18a7e971dee51839bd51f5f8d313735a13a99e5e5a1e25d078c7`，授权快照=`192c88ae220af0cbef0baa39a8fba5dbae794e277239ede8cccb413b4a2b2b72`。B1 训练 6642 行、6648 步；8 epoch mean loss 为 0.1179185387、0.0165925112、0.0119588051、0.0104973149、0.0082964728、0.0070479188、0.0063421669、0.0058038972。固定 0.5 阈值 development P/R/F1=0.7150837989/0.6095238095/0.6580976864，TP=128、FP=51、FN=82；78 个遮蔽训练正例恢复 21，恢复率 0.2692307692；zero-visible classes 为空。
+
+同一 fold02/10%/seed13/模型/预算三臂描述：B0 F1=0.6614173228、正预测171、恢复17/78；B1 F1=0.6580976864、正预测179、恢复21/78；T0 F1=0、正预测0、恢复0/78。B0 与 B1 development F1 仅差 0.00332，B1 以较低 precision 换取较高 recall，恢复多 4 个；单 fold/单 seed下不宣称二者优劣。T0 相对两个匹配对照均全零，说明故障集中于当前 classwise T0 目标/优化行为，而非 PU 方法整体、共享 BERT、输入或固定阈值必然失败。源码只读审计给出可检验机制假设：T0 只对当前 minibatch 出现可见正例的类别计算风险，完全无可见正例的 batch 返回连通零损失；实测 2669/6648（约40.1%）batch 无信号。对未在当前 batch 出现正例的类别也跳过风险，可能造成极低有效监督并促成全负预测，但现有聚合证据不能证明这是唯一原因。
+
+第 53 节预注册停止规则要求原正例召回明显退化时停止算法贡献主张。T0 在本筛选单元 development recall=0 且遮蔽恢复=0，已满足停止条件；因此不授权/运行 T0 的 fold03、0/30/50% 或多种子矩阵，也不调阈值、不以 B0/B1 成功追认 T0。保留结论为“逐关系 minibatch nnPU 设计的负结果及稀疏监督失败模式”。下一步仅可做 development-only、无原文/ID输出的只读失败审计（例如按类预测计数和分数分布、风险分量/有效更新覆盖），需独立冻结和授权；或直接与导师调整论文范围。任何新损失属于新方法版本，必须另立协议，不能覆盖本三臂结果。outer/Task105/锁定评测继续封闭。
+
+
+## 85. 2026-09-21 T0 失败只读审计实施计划（进行中）
+
+用户在第 84 节停止决定后要求“执行下一步”。本步骤不再训练或修改 B0/B1/T0，而是准备独立 development-only 诊断执行器。目标：精确绑定 fold02/10% 三个已完成 checkpoint/metrics/manifest/auth 及原 execution/design freeze；仅重放 inner fold02 heldout 与同一可见训练视图的推理，输出聚合统计，不输出原文、report/pair ID 或逐行预测。计划产物为功能命名的 audit backend、runner、合成测试、execution freeze 与本次 exact authorization；禁止 outer、Task105、锁定评测、训练、梯度、参数更新和阈值调优。
+
+阶段：① 固定审计指标与输入/输出白名单；② 实现纯聚合 backend，包括全局/逐类分数摘要、固定0.5预测计数、遮蔽正例聚合分数、T0 训练 batch 有效覆盖及最终全视图风险分量；③ 实现 fail-closed runner 的 validate/preflight/execute/postrun，逐项核三臂服务器哈希和授权、顺序加载 checkpoint 推理、原子写聚合 JSON/manifest；④ 合成测试验证无原文/ID泄漏、覆盖计数、风险公式、跨单元/篡改拒绝；⑤ 本地 Ruff/语法/测试/冻结绑定后生成精确授权，再交由用户上传服务器。当前在阶段①；服务器三臂结果不下载，本地测试只用合成张量/假 checkpoint 接口。outer/Task105/锁定评测始终封闭。
+
+
+## 86. 2026-09-21 三臂失败审计执行器、冻结与单次授权准备完成
+
+第85节计划五阶段已完成本地实现。新增聚合后端 `tools/cti_observed_state_failure_audit_backend.py` SHA256=`e8ece8eaabb6e9a35bc12ff1a2d8c270e0d3336362fa6861766b62e224157bbd`：严格校验18维概率/金标，输出全局与逐关系 score quantiles、固定0.5预测计数和 P/R/F1；只在遮蔽正例单元汇总分数/恢复；用实际 PyTorch DataLoader seed13 顺序重放8 epoch batch覆盖；在最终 T0 checkpoint 概率上计算全可见训练视图的 positive+/positive-/marginal negative/raw/clamped/total nnPU风险。递归输出守卫拒绝 report/pair ID、原文、逐行 probabilities/logits/predictions 等键。
+
+独立 runner `tools/run_cti_observed_state_failure_audit.py` SHA256=`83efa6fdec314d7dcfd18899c4df9ad2362be6eedd444280d79213f837ef4d05`，提供 validate-prepared/preflight/execute/postrun。它只接受 fold02/rate0.1/seed13/cuda 的三臂已完成产物，逐项核12个服务器 artifact SHA、manifest/metrics/auth 状态、原 design/training freeze、inner train/heldout/labels和基础BERT哈希；execute 重建相同遮蔽/可见视图，顺序载入 B0/B1/T0 checkpoint 做无梯度推理，原子输出 `aggregate_failure_audit.json`、授权快照和完成清单。无训练、参数更新、阈值扫描或逐行输出，失败保留 incomplete、不自动重试。
+
+合成测试 `tests/test_cti_observed_state_failure_audit.py` SHA256=`a2a2b1ad4803e71394986c5de7a26f2f497fc21c88e2bb942a00a94d671a7dd2` 共8项，覆盖固定阈值计数、遮蔽聚合不泄漏ID、batch覆盖、风险有限性、NaN/敏感输出拒绝、精确授权和非CUDA拒绝；unittest、py_compile、Ruff均通过。审计执行冻结 `cti_observed_state_failure_audit_execution_freeze.json` SHA256=`a336256f30fece809a45adea94dc3a1aae1006d4842a706f02eee89cce1fcf73`，绑定10项代码/既有冻结和12项三臂产物；validate-prepared通过。已完成B1授权原字节归档 SHA=`192c88ae220af0cbef0baa39a8fba5dbae794e277239ede8cccb413b4a2b2b72`。用户“执行下一步”形成的 exact audit authorization SHA256=`ee088f9bb78ad96314a15788d76032f5a80b806a7b2ad37743f88a9ed1c989b9`，绑定该freeze与三份manifest、最大一次、训练/调阈值/原文ID输出/outer访问均false；本地授权绑定和独占输出门槛通过。服务器尚未上传、preflight或execute。下一步上传3项新代码/测试、freeze、audit auth和B1完成授权归档，服务器核哈希、跑8项合成测试、validate-prepared和CPU preflight；全部通过后单次CUDA audit。outer/Task105/锁定评测继续封闭。
+
+
+## 87. 2026-09-21 三臂聚合失败审计完成，等待 postrun 与摘要
+
+用户服务器日志回传审计 status=`complete_development_only_aggregate_failure_audit`、manifest SHA256=`e33dbbcaff3d11601d8ed39d1a5aca9a40bd0496520a99111b9aa0b26b55aa76`、model_training_executed=false、raw_text_or_ids_emitted=false、outer_or_locked_accessed=false；TypedStorage 仍是无害弃用警告。说明唯一获准的三臂 CUDA 聚合推理已经完成并提交独占输出，不能再次执行。当前尚待 postrun 核验 aggregate JSON 与授权快照哈希，且尚未回传聚合分数/覆盖/风险摘要，因此不更新第84节机制判断。下一步仅 postrun、三文件 SHA 和压缩聚合摘要；不得再 execute。outer/Task105/锁定评测继续封闭。
+
+
+## 88. 2026-09-21 三臂聚合失败审计验收完成，T0 失败机制边界收紧
+
+用户服务器回传审计 postrun=`passed_development_only_aggregate_failure_audit_postrun`、退出码0；manifest SHA256=`e33dbbcaff3d11601d8ed39d1a5aca9a40bd0496520a99111b9aa0b26b55aa76`，aggregate JSON SHA256=`96ee94befc2a5d0c54252650d3986f6832cd7d4a9e81195f326dc704f0a1325b`，授权快照 SHA256=`ee088f9bb78ad96314a15788d76032f5a80b806a7b2ad37743f88a9ed1c989b9`；训练/阈值调优/原文ID输出/outer锁定访问均false。完成清单及两项产物哈希通过 runner 验收。
+
+聚合分数揭示 T0 并非简单全局低分：heldout 全部18维分数均值 T0=0.04977，高于 B0=0.00884、B1=0.00899；但 T0 分布缺少高置信尾部，q95=0.16385、q99=0.28518、最大值=0.46822，固定0.5下171/179/0个正预测分别对应B0/B1/T0。B0/B1的全局最大值为0.96830/0.94246，虽绝大多数负单元接近0，正例形成越阈值高尾。遮蔽正例同样：T0 mean=0.17087、q50=0.10924、q75=0.35388、max=0.44513、0/78恢复；B0 mean=0.23718、max=0.93664、17/78恢复；B1 mean=0.24964、q75=0.50774、max=0.89221、21/78恢复。因此“只需降低阈值”不是冻结协议允许的修复，也不能替代模型未形成正负极化的事实。
+
+T0覆盖审计精确复现6648 batch中2669个零信号 batch，比例0.401474。逐类有效 batch 极稀疏：最高 uses=0.3508、targets=0.2122、indicates=0.0925；其余均不超过0.0204，controls/delivers/exploits/has各仅8/6648=0.001203。对应可见先验最高 uses=0.05738、targets=0.03262、indicates=0.01322，其余不超过0.002844，多项仅0.0001673。最终全训练视图18类 raw negative risk 全部为正，negative_risk_clamped等于raw值，无一被nnPU截为0；因此“非负风险截断导致塌缩”与现有最终态证据不符。更受支持但仍属机制推断的解释是：极小类先验使正风险权重很弱，当前实现又只在batch内出现该类正例时才计算该类风险，40.1% batch完全无更新且稀有类有效更新率极低，最终得到宽而中低、无越0.5高尾的保守分布。不能据最终checkpoint唯一定位训练全过程因果，需新方法实验才能验证。
+
+第84节停止决定得到强化：不再运行当前T0其他fold/rate/seed，不做事后阈值扫描或用开发集调阈值，不把B0/B1结果扩大为总体显著性结论。当前T0仅保留为“minibatch classwise nnPU在极稀疏多标签关系监督中的负结果/失效模式”。如果继续方法研究，候选改动如跨batch/epoch风险聚合、正例感知采样或改变先验/风险标度均属于新方法，必须新命名、新协议、新合成验证和独立筛选授权，不能覆盖当前结果。论文/毕业设计下一步应先与导师确认是否接受以B0/B1匹配基线加T0负结果和严格失败审计作为范围，再决定是否开新方法轨。outer/Task105/锁定评测继续封闭。
+
+
+## 89. 2026-09-21 负结果不足以构成论文贡献，形成导师评审与新方法建议
+
+用户明确判断当前“负结果 + 严格失败审计”不足以单独构成论文中的鲁棒性或方法边界贡献。已生成面向导师的功能性评审文档 `cti_improvement/CTI_OBSERVED_STATE_ADVISOR_REVIEW.md`，汇总冻结设计、fold02/mask10/seed13 三臂结果、聚合失败审计、允许与禁止的结论，并列出需导师确认的研究问题、匹配对照、主指标、计算预算和论文最低验收标准。
+
+下一主方法建议为“双流覆盖感知类别级非负 PU 风险（DSC-nnPU）”：均匀行流估计未标注边际风险，类别均衡正例流保证每个有可见正例的类别在冻结窗口内获得正风险更新，直接针对 T0 的 40.15% 零信号 batch 与稀有类最低 0.12% 有效覆盖，同时避免正例过采样扭曲未标注边际。备选为跨 batch 风险记忆和 prior/正风险重加权；事后降阈值、单纯加 epoch 或换编码器不作为首选。
+
+建议下一阶段按“纯合成与执行器验证 → fold02/10%/seed13 单单元机制门槛 → 2 folds × 3 非零遮蔽率 × 3 arms 小矩阵 → 至少 3 seeds 配对确认”推进。新方法须使用新名称、设计 freeze、执行 freeze、输出路径和单元授权，不覆盖 T0/B0/B1 产物；在导师确认前不实现、不训练。outer、Task105 和锁定评测继续禁止访问。
